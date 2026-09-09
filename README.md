@@ -1,1 +1,1 @@
-Petshop
+Proyecto PetShop
