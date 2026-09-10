@@ -320,13 +320,12 @@ body {
 }
 
 .banner-card {
-    background: linear-gradient(135deg, #6C2A8A, #2B30C4);
+    background: #6C2A8A;
     color: #ffffff;
     padding: 20px 25px;
     border-radius: 10px;
     border-left: 6px solid #00E676;
 }
-
 .banner-card h1 {
     font-size: 22px;
     margin-bottom: 6px;
