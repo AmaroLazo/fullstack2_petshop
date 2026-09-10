@@ -1,0 +1,417 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f8f9fa;
+    color: #333333;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ================= 1. BARRA SUPERIOR (HEADER) ================= */
+.top-bar {
+    background-color: #6C2A8A; /* Morado Principal */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 75px;
+    padding: 0 15px;
+    border-bottom: 3px solid #00E676; /* Verde Decorativo */
+}
+
+/* Lado Izquierdo: Contenedor Usuario + Botón Home */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Contenedor relativo del Usuario para posicionar el desplegable */
+.user-dropdown-container {
+    position: relative;
+}
+
+/* Tarjeta Clicable del Usuario */
+.user-trigger {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.user-trigger:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+}
+
+.logo-img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+}
+
+.user-bar {
+    background-color: #2B30C4; /* Azul Secundario */
+    color: #ffffff;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.user-label {
+    color: #00E676;
+    font-weight: 800;
+    font-size: 13px;
+}
+
+/* --- MENÚ DESPLEGABLE FLOTANTE --- */
+.user-menu-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    background-color: #ffffff;
+    border: 2px solid #2B30C4;
+    border-radius: 12px;
+    min-width: 230px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    padding: 10px 0;
+}
+
+.user-menu-dropdown.show {
+    display: block;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menu-header {
+    padding: 8px 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-header strong {
+    color: #6C2A8A;
+    font-size: 15px;
+}
+
+.menu-header small {
+    color: #666666;
+    font-size: 12px;
+}
+
+.user-menu-dropdown hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin: 6px 0;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 9px 16px;
+    color: #333333;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f3e9f8;
+    color: #6C2A8A;
+}
+
+.dropdown-item.logout-item {
+    color: #d32f2f;
+}
+
+.dropdown-item.logout-item:hover {
+    background-color: #ffebee;
+}
+
+/* --- BOTÓN HOME DESTACADO CON BRILLO --- */
+.home-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.icon-img-home {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.home-btn:hover .icon-img-home {
+    transform: scale(1.22);
+    filter: drop-shadow(0 0 14px #00E676) brightness(1.3);
+}
+
+/* Lado Derecho */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-tag-box {
+    background-color: #00E676;
+    color: #000000;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.search-input {
+    width: 160px;
+    height: 34px;
+    border: 2px solid #2B30C4;
+    border-radius: 6px;
+    padding: 0 8px;
+    outline: none;
+}
+
+.search-btn {
+    width: 34px;
+    height: 34px;
+    background-color: #00E676;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.user-profile-box {
+    background-color: #2B30C4;
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+/* ================= CONTENEDOR PRINCIPAL ================= */
+.layout-container {
+    display: flex;
+    flex: 1;
+}
+
+/* ================= 2. BARRA LATERAL (SIDEBAR) ================= */
+.sidebar {
+    width: 220px;
+    background-color: #ffffff;
+    border-right: 2px solid #2B30C4;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 15px 10px;
+}
+
+.sidebar-top {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.nav-menu {
+    border: 2px solid #6C2A8A;
+    border-radius: 8px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background-color: #f3e9f8;
+}
+
+.menu-item {
+    display: block;
+    padding: 8px 12px;
+    background-color: #ffffff;
+    color: #6C2A8A;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    border: 1px solid #6C2A8A;
+    transition: all 0.2s ease;
+}
+
+.menu-item.active, .menu-item:hover {
+    background-color: #6C2A8A;
+    color: #ffffff;
+}
+
+.sidebar-extra-item {
+    display: block;
+    padding: 10px 12px;
+    background-color: #2B30C4;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.sidebar-extra-item:hover {
+    background-color: #1f2393;
+}
+
+.sidebar-bottom {
+    display: flex;
+    gap: 8px;
+    margin-top: 30px;
+}
+
+.sidebar-badge {
+    flex: 1;
+    background-color: #00E676;
+    color: #000000;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    padding: 8px 4px;
+    border-radius: 6px;
+}
+
+/* ================= 3. ÁREA DE CONTENIDO (MAIN) ================= */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+}
+
+.hero-banner {
+    padding: 15px;
+    border-bottom: 2px solid #2B30C4;
+}
+
+.banner-card {
+    background: linear-gradient(135deg, #6C2A8A, #2B30C4);
+    color: #ffffff;
+    padding: 20px 25px;
+    border-radius: 10px;
+    border-left: 6px solid #00E676;
+}
+
+.banner-card h1 {
+    font-size: 22px;
+    margin-bottom: 6px;
+}
+
+.banner-card p {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.featured-section {
+    flex: 1;
+    padding: 25px;
+    border-bottom: 2px solid #2B30C4;
+    min-height: 200px;
+}
+
+.featured-section h2 {
+    color: #6C2A8A;
+    margin-bottom: 10px;
+}
+
+.featured-section p {
+    color: #555555;
+    line-height: 1.5;
+}
+
+.bottom-section {
+    display: flex;
+    padding: 20px 25px;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.bottom-left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 220px;
+}
+
+.promo-title-box {
+    background-color: #6C2A8A;
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.promo-card {
+    background-color: #f0f7ff;
+    border: 2px solid #2B30C4;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.badge-discount {
+    display: inline-block;
+    margin-top: 8px;
+    background-color: #00E676;
+    color: #000000;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.bottom-right-col {
+    flex: 1;
+}
+
+.club-banner {
+    background-color: #2B30C4;
+    color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    border-right: 6px solid #00E676;
+}
+
+.club-banner h3 {
+    margin-bottom: 8px;
+    color: #ffffff;
+}
+
+.club-banner p {
+    font-size: 14px;
+    line-height: 1.4;
+}

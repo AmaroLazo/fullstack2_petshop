@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patitas & Co. - Tienda de Mascotas</title>
+    <link rel="stylesheet" href="css/miestilo.css">
+</head>
+<body>
+
+    <!-- 1. BARRA SUPERIOR -->
+    <header class="top-bar">
+        <!-- Lado izquierdo: Usuario desplegable y Botón Home grande -->
+        <div class="header-left">
+            
+            <!-- Contenedor del Usuario con Menú Flotante -->
+            <div class="user-dropdown-container">
+                <div class="user-trigger" onclick="toggleUserMenu(event)">
+                    <img src="img/icono.png" alt="Logo Mascotas" class="logo-img">
+                    <div class="user-bar">
+                        <span class="user-label">USUARIO:</span>
+                        <span class="user-name">Shine_x09 ▾</span>
+                    </div>
+                </div>
+
+                <!-- Ventana Desplegable de Opciones -->
+                <div id="userMenu" class="user-menu-dropdown">
+                    <div class="menu-header">
+                        <strong>Shine_x09</strong>
+                        <small>shine_x09@patitas.com</small>
+                    </div>
+                    <hr>
+                    <a href="#cuenta" class="dropdown-item">👤 Mi Cuenta / Perfil</a>
+                    <a href="#pedidos" class="dropdown-item">📦 Mis Compras y Pedidos</a>
+                    <a href="#favoritos" class="dropdown-item">❤️ Lista de Deseos</a>
+                    <a href="#privacidad" class="dropdown-item">🔒 Configuración y Privacidad</a>
+                    <a href="#ayuda" class="dropdown-item">❓ Centro de Ayuda</a>
+                    <hr>
+                    <a href="#logout" class="dropdown-item logout-item">🚪 Cerrar Sesión</a>
+                </div>
+            </div>
+
+            <!-- Botón Home Grande con Brillo -->
+            <a href="index.html" class="home-btn" title="Inicio">
+                <img src="img/home.png" alt="Inicio" class="icon-img-home">
+            </a>
+        </div>
+
+        <!-- Lado derecho: Ofertas, Buscador y Carrito -->
+        <div class="header-right">
+            <div class="header-tag-box">Ofertas</div>
+            
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Buscar...">
+                <button class="search-btn">🔍</button>
+            </div>
+
+            <div class="user-profile-box">🛒 (2)</div>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL -->
+    <div class="layout-container">
+
+        <!-- 2. BARRA LATERAL (SIDEBAR) -->
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <nav class="nav-menu">
+                    <a href="index.html" class="menu-item active">Perros</a>
+                    <a href="gatos.html" class="menu-item">Gatos</a>
+                </nav>
+
+                <a href="alimentos.html" class="sidebar-extra-item">Alimentos & Snacks</a>
+                <a href="accesorios.html" class="sidebar-extra-item">Juguetes & Accesorios</a>
+            </div>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-badge">Contacto</div>
+                <div class="sidebar-badge">Ayuda</div>
+            </div>
+        </aside>
+
+        <!-- 3. ÁREA DE CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+
+            <section class="hero-banner">
+                <div class="banner-card">
+                    <h1>¡Todo para consentir a tu mascota!</h1>
+                    <p>Envíos gratis en compras sobre $25.000 y 15% Dcto en alimentos seleccionados.</p>
+                </div>
+            </section>
+
+            <section class="featured-section">
+                <h2>Bienvenidos a nuestra Tienda de Mascotas</h2>
+                <p>Encuentra la mayor variedad de productos para la nutrición, diversión y cuidado de tus peluditos.</p>
+            </section>
+
+            <section class="bottom-section">
+                <div class="bottom-left-col">
+                    <div class="promo-title-box">
+                        <h3>Promo del Día ⚡</h3>
+                    </div>
+                    <div class="promo-card">
+                        <p><strong>Snacks Dentales</strong></p>
+                        <span class="badge-discount">-30% DCTO</span>
+                    </div>
+                </div>
+
+                <div class="bottom-right-col">
+                    <div class="club-banner">
+                        <h3>Únete al Club Patitas 🐾</h3>
+                        <p>Acumula puntos por cada compra y canjéalos por premios, descuentos exclusivos y sorpresas en el mes de su cumpleaños.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- SCRIPT PARA ABRIR Y CERRAR EL MENÚ DE USUARIO -->
+    <script>
+        function toggleUserMenu(event) {
+            event.stopPropagation();
+            const userMenu = document.getElementById('userMenu');
+            userMenu.classList.toggle('show');
+        }
+
+        // Cierra el menú al hacer clic en cualquier otra parte fuera de él
+        window.addEventListener('click', function(e) {
+            const userMenu = document.getElementById('userMenu');
+            if (userMenu.classList.contains('show')) {
+                userMenu.classList.remove('show');
+            }
+        });
+    </script>
+
+</body>
+</html>
