@@ -1,0 +1,23 @@
+.hero-banner {
+    width: 85%;
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.banner-card {
+    background-color: #3D2645;
+    color: white;
+    padding: 35px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.banner-card h1 {
+    margin-bottom: 10px;
+    font-size: 32px;
+}
+
+.banner-card p {
+    margin: 0;
+    font-size: 18px;
+}

@@ -1,0 +1,12 @@
+@font-face {
+    font-family: 'Terraria';
+    src: url('../fonts/Terraria.ttf') format('truetype');
+}
+
+body {
+    font-family: 'Terraria', sans-serif;
+}
+header{
+    font-family: 'Terraria', sans-serif;
+    
+}
