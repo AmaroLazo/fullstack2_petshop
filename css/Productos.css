@@ -1,18 +1,21 @@
 .productos-recomendados {
-    width: 85%;
-    max-width: 1200px;
-    margin: 40px auto;
+    width: min(92%, 1200px);
+    margin: clamp(24px, 5vw, 40px) auto;
 }
 
 .productos-recomendados h2 {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: clamp(18px, 3vw, 30px);
+    font-size: clamp(1.3rem, 1rem + 1.2vw, 1.75rem);
 }
 
 .productos-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 25px;
+    /* Grilla fluida: cada tarjeta pide un mínimo de ~220px y el grid
+       decide solo cuántas columnas caben, desde 1 columna en pantallas
+       diminutas hasta muchas columnas en monitores 4K/ultra-wide */
+    grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+    gap: clamp(14px, 2.5vw, 25px);
 }
 
 .producto {
@@ -21,29 +24,30 @@
     padding: 15px;
     text-align: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    min-width: 0; /* evita que el grid se rompa con contenido ancho */
 }
 
 .producto img {
     width: 100%;
-    height: 200px;
+    height: clamp(140px, 20vw, 200px);
     object-fit: contain;
     border-radius: 8px;
 }
 
 .producto h3 {
     margin-top: 15px;
-    font-size: 20px;
+    font-size: clamp(1rem, 0.85rem + 0.5vw, 1.25rem);
 }
 
 .producto p {
-    font-size: 14px;
+    font-size: clamp(0.8rem, 0.75rem + 0.2vw, 0.875rem);
     min-height: 40px;
 }
 
 .producto span {
     display: block;
     margin-top: 10px;
-    font-size: 18px;
+    font-size: clamp(0.95rem, 0.85rem + 0.3vw, 1.125rem);
     font-weight: bold;
     color: #6C2A8A;
 }
@@ -64,4 +68,21 @@
 
 .boton-mas-productos a:hover {
     background-color: #57216F;
+}
+
+/* Pantallas extremadamente angostas: una sola columna centrada y tarjeta
+   sin forzar mínimo de 220px (para no generar scroll horizontal) */
+@media (max-width: 260px) {
+    .productos-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Monitores muy anchos (ultra-wide / múltiples monitores): tope de ancho
+   por tarjeta para que no queden gigantes con pocas columnas */
+@media (min-width: 1600px) {
+    .productos-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
+        justify-content: center;
+    }
 }

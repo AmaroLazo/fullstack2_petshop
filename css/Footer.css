@@ -13,3 +13,8 @@ footer {
     margin-top: auto;
 }
 
+footer .container {
+    padding-left: clamp(12px, 4vw, 24px);
+    padding-right: clamp(12px, 4vw, 24px);
+}
+

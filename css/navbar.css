@@ -1,74 +1,276 @@
+/* =========================
+   LOGO
+   ========================= */
+
 .logo-navbar {
-    width: 45px;
-    height: 45px;
+    width: clamp(60px, 8vw, 130px);
+    height: clamp(60px, 8vw, 130px);
     object-fit: contain;
+
+    /* Evita que el logo modifique la altura del navbar */
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
+
+/* Contenedor del logo y nombre */
+
+.navbar-brand {
+    position: relative;
+
+    height: clamp(40px, 6vw, 50px);
+
+    display: flex;
+    align-items: center;
+
+    /* Espacio para que el texto no quede debajo del logo, escala con el logo */
+    padding-left: clamp(65px, 9vw, 120px);
+
+    max-width: 100%;
+}
+
+
+/* Nombre Huellitas Club */
+
+.navbar-brand span {
+    font-size: clamp(1.1rem, 1vw + 1rem, 1.875rem);
+    white-space: nowrap;
+}
+
+
+/* =========================
+   CENTRO DEL NAVBAR
+   ========================= */
+
 .navbar-centro {
-    width: 60%;
+    width: 45%;
+    max-width: 700px; /* evita que se estire demasiado en monitores ultra-wide */
+
     margin: 0 auto;
 }
+
+
+/* =========================
+   BÚSQUEDA
+   ========================= */
 
 .busqueda {
     display: flex;
     align-items: center;
     width: 100%;
+   
 }
 
+
+/* Contenedor del botón Home */
+
 .busqueda > a {
+    position: relative;
+
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     margin-right: 10px;
 }
 
-.busqueda img {
-    width: 38px;
-    height: 38px;
+
+/* Icono Home */
+
+.busqueda > a img {
+    width: clamp(40px, 6vw, 80px);
+    height: clamp(40px, 6vw, 80px);
+
     object-fit: contain;
+
+    /* Evita que el Home modifique la altura del navbar */
+    position: absolute;
 }
+
+
+/* Formulario de búsqueda */
 
 .busqueda form {
     flex: 1;
 }
+.busqueda input {
+    height: 35px;
+}
+
+.busqueda button {
+    height: 35px;
+}
+
+/* =========================
+   CATEGORÍAS
+   ========================= */
 
 .categorias-navbar {
     display: flex;
+
     justify-content: center;
+
     gap: 15px;
+
     margin-top: 10px;
 }
+
+
+/* Botones de categorías */
 
 .btn-categoria {
     color: white;
     border: none;
 }
 
+
+/* Efecto al pasar el mouse */
+
 .btn-categoria:hover,
 .btn-categoria:focus {
     color: #E8C9F5;
 }
 
+
+/* =========================
+   MENÚ DESPLEGABLE
+   ========================= */
+
 .dropdown-menu {
     min-width: 190px;
 }
 
+
+/* =========================
+   BOTONES DERECHA
+   ========================= */
+
 .navbar-derecha {
     display: flex;
+
     gap: 8px;
+
     margin-left: auto;
 }
+
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
 @media (max-width: 768px) {
+
+    /* Centro */
 
     .navbar-centro {
         width: 100%;
         margin-top: 15px;
     }
 
+
+    /* Categorías */
+
     .categorias-navbar {
         flex-wrap: wrap;
         gap: 5px;
     }
 
+
+    /* Botones de la derecha */
+
     .navbar-derecha {
         margin-top: 15px;
+
         justify-content: center;
+    }
+
+
+    /* Logo en pantallas pequeñas */
+
+    .logo-navbar {
+        width: 90px;
+        height: 90px;
+
+        left: 5px;
+    }
+
+
+    .navbar-brand {
+        padding-left: 85px;
+    }
+
+
+    .navbar-brand span {
+        font-size: 24px;
+    }
+}
+
+
+/* Pantallas muy angostas: plegables cerrados, relojes, celulares chicos (<380px) */
+@media (max-width: 380px) {
+
+    .navbar-brand span {
+        font-size: 15px;
+    }
+
+    .logo-navbar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .navbar-brand {
+        padding-left: 60px;
+    }
+
+    .busqueda {
+        flex-wrap: wrap;
+        row-gap: 6px;
+    }
+
+    .busqueda form {
+        width: 100%;
+        flex: 0 0 100%;
+    }
+
+    .btn-categoria {
+        font-size: 0.85rem;
+        padding: 4px 8px;
+    }
+
+    .navbar-derecha {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .navbar-derecha .btn {
+        font-size: 0.85rem;
+        padding: 4px 10px;
+    }
+}
+
+
+/* Tablets en vertical / pantallas intermedias: más aire entre categorías */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .navbar-centro {
+        width: 60%;
+    }
+
+    .categorias-navbar {
+        flex-wrap: wrap;
+        row-gap: 6px;
+    }
+}
+
+
+/* Monitores ultra-wide: evita que los botones de categorías queden
+   demasiado separados entre sí */
+@media (min-width: 1800px) {
+    .categorias-navbar {
+        gap: 30px;
     }
 }
