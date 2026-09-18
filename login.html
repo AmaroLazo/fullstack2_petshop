@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Iniciar Sesión - Huellitas Club</title>
+
+    <link rel="stylesheet" href="css/miestilo.css">
+
+
+</head>
+
+<body>
+
+    <main class="login-container">
+
+        <div class="login-card">
+
+            <!-- Logo -->
+            <img src="img/icono.png"
+                 alt="Huellitas Club"
+                 class="login-logo">
+
+            <h1>Huellitas Club</h1>
+
+            <!-- INICIO DE SESIÓN -->
+            <div id="login-form">
+
+                <h2>Iniciar Sesión</h2>
+
+                <p class="login-subtitulo">
+                    Ingresa a tu cuenta
+                </p>
+
+                <form onsubmit="iniciarSesion(event)">
+
+                    <div class="campo">
+                        <label for="login-correo">
+                            Correo electrónico
+                        </label>
+
+                        <input type="email"
+                               id="login-correo"
+                               placeholder="correo@ejemplo.com"
+                               required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="login-password">
+                            Contraseña
+                        </label>
+
+                        <input type="password"
+                               id="login-password"
+                               placeholder="Contraseña"
+                               required>
+                    </div>
+
+                    <p id="login-error" class="mensaje-error"></p>
+
+                    <button type="submit" class="btn-login">
+                        Iniciar Sesión
+                    </button>
+
+                </form>
+
+                <p class="cambiar-formulario">
+                    ¿No tienes una cuenta?
+                    <a href="#" onclick="mostrarRegistro()">
+                        Registrarse
+                    </a>
+                </p>
+
+            </div>
+
+
+            <!-- REGISTRO -->
+            <div id="registro-form" style="display: none;">
+
+                <h2>Crear Cuenta</h2>
+
+                <p class="login-subtitulo">
+                    Regístrate en Huellitas Club
+                </p>
+
+                <form onsubmit="registrarse(event)">
+
+                    <div class="campo">
+                        <label for="registro-nombre">
+                            Nombre de usuario
+                        </label>
+
+                        <input type="text"
+                               id="registro-nombre"
+                               placeholder="Tu nombre"
+                               required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="registro-correo">
+                            Correo electrónico
+                        </label>
+
+                        <input type="email"
+                               id="registro-correo"
+                               placeholder="correo@ejemplo.com"
+                               required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="registro-password">
+                            Contraseña
+                        </label>
+
+                        <input type="password"
+                               id="registro-password"
+                               placeholder="Contraseña"
+                               required>
+                    </div>
+
+                    <div class="campo">
+                        <label for="registro-password-confirmar">
+                            Confirmar contraseña
+                        </label>
+
+                        <input type="password"
+                               id="registro-password-confirmar"
+                               placeholder="Repite tu contraseña"
+                               required>
+                    </div>
+
+                    <p id="registro-error" class="mensaje-error"></p>
+
+                    <button type="submit" class="btn-login">
+                        Registrarse
+                    </button>
+
+                </form>
+
+                <p class="cambiar-formulario">
+                    ¿Ya tienes una cuenta?
+                    <a href="#" onclick="mostrarLogin()">
+                        Iniciar Sesión
+                    </a>
+                </p>
+
+            </div>
+
+            <a href="index.html" class="volver">
+                ← Volver a la tienda
+            </a>
+
+        </div>
+
+    </main>
+
+    <script src="js/login.js"></script>
+
+</body>
+</html>
