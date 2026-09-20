@@ -58,8 +58,26 @@ function iniciarSesion(event) {
 
     const error = document.getElementById("login-error");
 
-    const usuarioGuardado = localStorage.getItem("usuario");
+    // Credenciales del administrador
+    const correoAdmin = "admin@huellitas.cl";
+    const passwordAdmin = "admin123";
 
+
+    // Comprobar si es administrador
+    if (correo === correoAdmin && password === passwordAdmin) {
+
+        localStorage.setItem("sesionActiva", "true");
+        localStorage.setItem("rol", "administrador");
+        localStorage.setItem("nombreUsuario", "Administrador");
+
+        window.location.href = "dashboard_admin.html";
+
+        return;
+    }
+
+
+    // Comprobar usuarios registrados
+    const usuarioGuardado = localStorage.getItem("usuario");
 
     if (!usuarioGuardado) {
 
@@ -75,11 +93,15 @@ function iniciarSesion(event) {
     if (correo === usuario.correo && password === usuario.password) {
 
         localStorage.setItem("sesionActiva", "true");
+        localStorage.setItem("rol", "usuario");
+        localStorage.setItem("nombreUsuario", usuario.nombre);
 
         window.location.href = "index.html";
 
     } else {
 
         error.textContent = "Correo o contraseña incorrectos.";
+
     }
 }
+
