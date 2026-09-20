@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto | Huellitas Club</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/miestilo.css">
+</head>
+<body>
+
+
+<!--Navbar               -->
+<nav class="navbar navbar-expand-sm navbar-dark">
+    <div class="container-fluid">
+
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+            <img src="img/icono.png"
+                 alt="Huellitas Club"
+                 class="logo-navbar">
+            <span class="ms-2">Huellitas Club</span>
+        </a>
+
+        <!-- Botón responsive -->
+        <button class="navbar-toggler" type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+
+            <!-- Buscador -->
+            <div class="navbar-centro">
+
+                <div class="busqueda">
+                    <a href="index.html">
+                        <img src="img/home.png" alt="Inicio">
+                    </a>
+
+                    <!-- Ahora envía la búsqueda al catálogo (catalogo.html?q=...) -->
+                    <form class="d-flex" action="catalogo.html" method="get">
+                        <input class="form-control me-2"
+                               type="search"
+                               name="q"
+                               id="busquedaNavbar"
+                               placeholder="Buscar..."
+                               aria-label="Buscar">
+
+                        <button class="btn btn-light" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Categorías -->
+                <div class="categorias-navbar">
+
+                    <!-- PERROS -->
+                    <div class="dropdown">
+                        <button class="btn btn-categoria dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown">
+                            🐶 Perros
+                        </button>
+
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="catalogo.html?animal=perros&categoria=alimentos">Alimentos</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=perros&categoria=snacks">Snacks y premios</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=perros&categoria=juguetes">Juguetes</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=perros&categoria=accesorios">Accesorios</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=perros&categoria=higiene">Higiene y cuidado</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=perros&categoria=camas">Camas y descanso</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- GATOS -->
+                    <div class="dropdown">
+                        <button class="btn btn-categoria dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown">
+                            🐱 Gatos
+                        </button>
+
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="catalogo.html?animal=gatos&categoria=alimentos">Alimentos</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=gatos&categoria=snacks">Snacks</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=gatos&categoria=juguetes">Juguetes</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=gatos&categoria=accesorios">Accesorios</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=gatos&categoria=higiene">Higiene y cuidado</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=gatos&categoria=camas">Camas y descanso</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- OTROS -->
+                    <div class="dropdown">
+                        <button class="btn btn-categoria dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown">
+                            🐾 Otros animales
+                        </button>
+
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="catalogo.html?animal=aves">Aves</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=roedores">Roedores</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=peces">Peces</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?animal=reptiles">Reptiles</a></li>
+                            <li><a class="dropdown-item" href="catalogo.html?categoria=accesorios">Accesorios</a></li>
+                        </ul>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Botones derecha -->
+            <div class="navbar-derecha">
+
+                <a href="login.html" class="btn btn-light">
+                    <i class="bi bi-person"></i>
+                    Iniciar Sesión
+                </a>
+
+                <a href="carrito.html" class="btn btn-light">
+                    <i class="bi bi-cart"></i>
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+<!-- Detalle del producto -->
+<main class="detalle-producto">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="catalogo.html">Catálogo</a></li>
+            <li class="breadcrumb-item active" aria-current="page" id="migaNombre">Producto</li>
+        </ol>
+    </nav>
+
+    <!-- Aquí se dibuja el producto -->
+    <div id="detalle"></div>
+
+</main>
+
+
+<!-- Productos relacionados -->
+<section class="productos-recomendados" id="relacionados" hidden>
+    <h2>Productos relacionados</h2>
+    <div class="productos-grid" id="relacionadosGrid"></div>
+</section>
+
+
+    <!-- Footer Basado en el que hizo el profe-->
+    <footer class="text-light pt-5 pb-3" style="background-color: #6C2A8A; font-family:'Terraria';">
+        <div class="container">
+            <div class="row g-4">
+
+                <!-- Información -->
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="fw-bold mb-3">Huellitas Club</h5>
+                    <p class="text-white-50">
+                        Petshop Oficial
+                    </p>
+
+                    <a href="https://wa.me/56967144636" target="_blank" class="btn btn-success">
+                        <i class="bi bi-whatsapp"></i>
+                        WhatsApp
+                    </a>
+                </div>
+
+                <!-- Enlaces -->
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="fw-bold mb-3">Enlaces</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="index.html" class="text-white-50 text-decoration-none">
+                                Inicio
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="informacion.html" class="text-white-50 text-decoration-none">
+                                Sobre Nosotros
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contacto -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Contacto</h6>
+
+                    <p class="text-white-50 mb-2">
+                        <i class="bi bi-geo-alt me-2"></i>
+                        Concepción, Chile
+                    </p>
+
+                    <p class="text-white-50 mb-2">
+                        <i class="bi bi-telephone me-2"></i>
+                        <a href="tel:+56912345678" class="text-white-50 text-decoration-none">
+                            +56 9 6714 4636
+                        </a>
+                    </p>
+
+                    <p class="text-white-50 mb-0">
+                        <i class="bi bi-envelope me-2"></i>
+                        <a href="mailto:contacto@miempresa.cl" class="text-white-50 text-decoration-none">
+                            huellitasclub@huellitas.cl
+                        </a>
+                    </p>
+                </div>
+
+                <!-- Redes sociales -->
+                <div class="col-lg-3 col-md-6">
+                    <h6 class="fw-bold mb-3">Síguenos</h6>
+
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-white fs-4" aria-label="Facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+
+                        <a href="#" class="text-white fs-4" aria-label="Instagram">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+
+                        <a href="#" class="text-white fs-4" aria-label="LinkedIn">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+
+                        <a href="https://wa.me/56912345678" target="_blank" class="text-white fs-4"
+                            aria-label="WhatsApp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr class="border-secondary my-4">
+
+            <!-- Copyright -->
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <small class="text-white-50">
+                        © 2026 Mi Empresa. Todos los derechos reservados.
+                    </small>
+                </div>
+
+                <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+                    <a href="#" class="text-white-50 text-decoration-none me-3">
+                        Política de privacidad
+                    </a>
+
+                    <a href="#" class="text-white-50 text-decoration-none">
+                        Términos y condiciones
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        /* =====================================================
+           BASE DE PRODUCTOS
+           Para agregar uno nuevo: copia un bloque, cambia el id
+           y agrégalo también como tarjeta en catalogo.html
+           (con su enlace a producto.html?id=NUMERO).
+           ===================================================== */
+        const PRODUCTOS = [
+            { id: 1,  nombre: "Alimento para perros",  precio: 12990, animal: ["perros"],
+              categoria: "alimentos",  imagen: "img/prueba1.png",
+              descripcion: "Alimento nutritivo para perros adultos, con proteínas de calidad, vitaminas y minerales para mantener su energía y un pelaje brillante." },
+            { id: 2,  nombre: "Alimento para gatos",   precio: 10990, animal: ["gatos"],
+              categoria: "alimentos",  imagen: "img/prueba1.png",
+              descripcion: "Alimento completo y equilibrado para gatos, ayuda a cuidar su salud digestiva y a mantener un peso saludable." },
+            { id: 3,  nombre: "Juguete para perros",   precio: 7990,  animal: ["perros"],
+              categoria: "juguetes",   imagen: "img/prueba1.png",
+              descripcion: "Juguete resistente para entretener a tu mascota, ideal para morder, jugar y liberar energía." },
+            { id: 4,  nombre: "Juguete para gatos",    precio: 5990,  animal: ["gatos"],
+              categoria: "juguetes",   imagen: "img/prueba1.png",
+              descripcion: "Juguete interactivo que estimula el instinto cazador de tu gato y lo mantiene activo y entretenido." },
+            { id: 5,  nombre: "Collar para perro",     precio: 6990,  animal: ["perros"],
+              categoria: "accesorios", imagen: "img/prueba1.png",
+              descripcion: "Collar cómodo y ajustable, fabricado con materiales resistentes para el uso diario." },
+            { id: 6,  nombre: "Correa para perro",     precio: 8990,  animal: ["perros"],
+              categoria: "accesorios", imagen: "img/prueba1.png",
+              descripcion: "Correa resistente y con buen agarre, pensada para paseos seguros y cómodos." },
+            { id: 7,  nombre: "Cama para mascotas",    precio: 19990, animal: ["perros", "gatos"],
+              categoria: "camas",      imagen: "img/prueba1.png",
+              descripcion: "Cama suave y cómoda para el descanso de tu mascota, con relleno mullido y fácil de limpiar." },
+            { id: 8,  nombre: "Plato para mascotas",   precio: 4990,  animal: ["perros", "gatos"],
+              categoria: "accesorios", imagen: "img/prueba1.png",
+              descripcion: "Plato práctico y estable para comida o agua, fácil de lavar y de larga duración." },
+            { id: 9,  nombre: "Snack para perros",     precio: 3990,  animal: ["perros"],
+              categoria: "snacks",     imagen: "img/prueba1.png",
+              descripcion: "Premios deliciosos para consentir y recompensar a tu perro durante el entrenamiento." },
+            { id: 10, nombre: "Snack para gatos",      precio: 3490,  animal: ["gatos"],
+              categoria: "snacks",     imagen: "img/prueba1.png",
+              descripcion: "Deliciosos premios para gatos, perfectos para momentos de cariño y juego." },
+            { id: 11, nombre: "Shampoo para mascotas", precio: 7490,  animal: ["perros", "gatos"],
+              categoria: "higiene",    imagen: "img/prueba1.png",
+              descripcion: "Shampoo suave para el cuidado del pelaje, deja a tu mascota limpia, perfumada y con un pelo suave." },
+            { id: 12, nombre: "Cepillo para mascotas", precio: 5490,  animal: ["perros", "gatos"],
+              categoria: "higiene",    imagen: "img/prueba1.png",
+              descripcion: "Cepillo que ayuda a eliminar el pelo suelto y a mantener el pelaje limpio y saludable." },
+            { id: 13, nombre: "Casa para gatos",       precio: 24990, animal: ["gatos"],
+              categoria: "camas",      imagen: "img/prueba1.png",
+              descripcion: "Espacio cómodo y acogedor para que tu gato descanse, juegue y se sienta seguro." },
+            { id: 14, nombre: "Pelota para perros",    precio: 4990,  animal: ["perros"],
+              categoria: "juguetes",   imagen: "img/prueba1.png",
+              descripcion: "Pelota resistente y rebotadora, perfecta para juegos de lanzar y buscar." },
+            { id: 15, nombre: "Arena para gatos",      precio: 9990,  animal: ["gatos"],
+              categoria: "higiene",    imagen: "img/prueba1.png",
+              descripcion: "Arena absorbente que controla los olores y mantiene limpio el espacio de tu gato." },
+            { id: 16, nombre: "Transportadora",        precio: 29990, animal: ["perros", "gatos"],
+              categoria: "accesorios", imagen: "img/prueba1.png",
+              descripcion: "Transportadora segura y ventilada, ideal para viajes y visitas al veterinario." }
+        ];
+
+        const NOMBRE_ANIMAL = { perros: "Perros", gatos: "Gatos", aves: "Aves", roedores: "Roedores", peces: "Peces", reptiles: "Reptiles" };
+        const NOMBRE_CATEGORIA = { alimentos: "Alimentos", snacks: "Snacks y premios", juguetes: "Juguetes",
+                                   accesorios: "Accesorios", higiene: "Higiene y cuidado", camas: "Camas y descanso" };
+
+        const formatoPrecio = n => '$' + n.toLocaleString('es-CL');
+
+        /* ---------- Conectar aquí tu carrito cuando lo tengas ---------- */
+        function agregarAlCarrito(producto, cantidad) {
+            console.log('Agregar al carrito:', producto.nombre, 'x' + cantidad);
+        }
+
+        /* ---------- Dibujar el detalle ---------- */
+        const id = parseInt(new URLSearchParams(window.location.search).get('id'), 10);
+        const producto = PRODUCTOS.find(p => p.id === id);
+        const contenedor = document.getElementById('detalle');
+
+        if (!producto) {
+            document.title = 'Producto no encontrado | Huellitas Club';
+            contenedor.innerHTML = `
+                <div class="detalle-card text-center">
+                    <i class="bi bi-emoji-frown fs-1"></i>
+                    <h1 class="detalle-nombre mt-2">Producto no encontrado</h1>
+                    <p>El producto que buscas no existe o ya no está disponible.</p>
+                    <a href="catalogo.html" class="btn">Volver al catálogo</a>
+                </div>`;
+        } else {
+            document.title = producto.nombre + ' | Huellitas Club';
+            document.getElementById('migaNombre').textContent = producto.nombre;
+
+            const etiquetas = [...producto.animal.map(a => NOMBRE_ANIMAL[a]), NOMBRE_CATEGORIA[producto.categoria]]
+                .map(t => `<span class="detalle-etiqueta">${t}</span>`).join('');
+
+            contenedor.innerHTML = `
+                <div class="detalle-card">
+                    <div class="row g-4">
+
+                        <div class="col-12 col-md-6">
+                            <div class="detalle-imagen">
+                                <img src="${producto.imagen}" alt="${producto.nombre}">
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <h1 class="detalle-nombre">${producto.nombre}</h1>
+                            <div class="mb-2">${etiquetas}</div>
+                            <p class="detalle-precio">${formatoPrecio(producto.precio)}</p>
+                            <p>${producto.descripcion}</p>
+
+                            <ul class="detalle-lista">
+                                <li><span>Código</span><strong>HC-${String(producto.id).padStart(3, '0')}</strong></li>
+                                <li><span>Categoría</span><strong>${NOMBRE_CATEGORIA[producto.categoria]}</strong></li>
+                                <li><span>Ideal para</span><strong>${producto.animal.map(a => NOMBRE_ANIMAL[a]).join(', ')}</strong></li>
+                            </ul>
+
+                            <div class="detalle-acciones">
+                                <div class="input-group detalle-cantidad">
+                                    <button class="btn" type="button" id="menos" aria-label="Disminuir cantidad">−</button>
+                                    <input type="number" class="form-control text-center" id="cantidad" value="1" min="1" max="10">
+                                    <button class="btn" type="button" id="mas" aria-label="Aumentar cantidad">+</button>
+                                </div>
+                                <button class="btn" type="button" id="btnAgregar">
+                                    <i class="bi bi-cart-plus"></i> Agregar al carrito
+                                </button>
+                            </div>
+
+                            <a href="catalogo.html" class="detalle-volver"><i class="bi bi-arrow-left"></i> Volver al catálogo</a>
+                        </div>
+
+                    </div>
+                </div>`;
+
+            /* Cantidad */
+            const inputCantidad = document.getElementById('cantidad');
+            const limitar = () => {
+                let v = parseInt(inputCantidad.value, 10);
+                if (isNaN(v) || v < 1) v = 1;
+                if (v > 10) v = 10;
+                inputCantidad.value = v;
+            };
+            document.getElementById('menos').addEventListener('click', () => { inputCantidad.value = parseInt(inputCantidad.value, 10) - 1; limitar(); });
+            document.getElementById('mas').addEventListener('click', () => { inputCantidad.value = parseInt(inputCantidad.value, 10) + 1; limitar(); });
+            inputCantidad.addEventListener('change', limitar);
+
+            document.getElementById('btnAgregar').addEventListener('click', () => {
+                limitar();
+                agregarAlCarrito(producto, parseInt(inputCantidad.value, 10));
+            });
+
+            /* Relacionados: misma categoría, o mismo animal si no hay suficientes */
+            let relacionados = PRODUCTOS.filter(p => p.id !== producto.id && p.categoria === producto.categoria);
+            if (relacionados.length < 4) {
+                const extra = PRODUCTOS.filter(p => p.id !== producto.id && !relacionados.includes(p) &&
+                                                    p.animal.some(a => producto.animal.includes(a)));
+                relacionados = relacionados.concat(extra);
+            }
+            relacionados = relacionados.slice(0, 4);
+
+            if (relacionados.length) {
+                document.getElementById('relacionadosGrid').innerHTML = relacionados.map(p => `
+                    <div class="producto">
+                        <img src="${p.imagen}" alt="${p.nombre}">
+                        <h3><a href="producto.html?id=${p.id}" class="stretched-link text-reset text-decoration-none">${p.nombre}</a></h3>
+                        <p>${p.descripcion.split('.')[0]}.</p>
+                        <span>${formatoPrecio(p.precio)}</span>
+                    </div>`).join('');
+                document.getElementById('relacionados').hidden = false;
+            }
+        }
+    </script>
+</body>
+</html>

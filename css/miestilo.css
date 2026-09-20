@@ -439,9 +439,10 @@ footer .container {
 
 .carrusel-principal img {
     width: 100%;
-    aspect-ratio: 16 / 9;
-    max-height: 70vh; /* evita que en pantallas muy anchas/bajas la imagen quede gigante */
-    object-fit: cover;
+    height: auto;
+    aspect-ratio: auto;
+    max-height: none;
+    object-fit: contain;
     border-radius: 15px;
 }
 
@@ -687,5 +688,162 @@ footer .container {
 }
 
 .volver:hover {
+    text-decoration: underline;
+}
+
+
+/* ==========================================================
+   10. CATÁLOGO
+   ========================================================== */
+
+.catalogo-filtros {
+    background-color: white;
+    border-radius: 12px;
+    padding: clamp(12px, 2.5vw, 20px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    margin-bottom: clamp(14px, 2.5vw, 25px);
+}
+
+.catalogo-filtros .form-label {
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+    color: #3D2645;
+}
+
+.catalogo-contador {
+    color: #777;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+.catalogo-sin-resultados {
+    text-align: center;
+    padding: 40px 15px;
+    color: #777;
+}
+
+
+/* ==========================================================
+   11. TARJETAS DE PRODUCTO CLICKEABLES
+   (el enlace del título cubre toda la tarjeta con stretched-link)
+   ========================================================== */
+
+.producto {
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.producto:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ==========================================================
+   12. DETALLE DE PRODUCTO
+   ========================================================== */
+
+.detalle-producto {
+    width: min(92%, 1200px);
+    margin: clamp(16px, 3vw, 30px) auto;
+}
+
+.detalle-producto .breadcrumb a {
+    color: #6C2A8A;
+    text-decoration: none;
+}
+
+.detalle-producto .breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.detalle-card {
+    background-color: white;
+    border-radius: 15px;
+    padding: clamp(16px, 3vw, 30px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.detalle-imagen {
+    background-color: #FAF7FC;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.detalle-imagen img {
+    width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+}
+
+.detalle-nombre {
+    font-size: clamp(1.4rem, 1.1rem + 1.5vw, 2.2rem);
+    color: #3D2645;
+    margin-bottom: 10px;
+}
+
+.detalle-etiqueta {
+    display: inline-block;
+    background-color: #E8C9F5;
+    color: #3D2645;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 0.85rem;
+    margin: 0 6px 6px 0;
+}
+
+.detalle-precio {
+    font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
+    font-weight: bold;
+    color: #6C2A8A;
+    margin-bottom: 10px;
+}
+
+.detalle-lista {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.detalle-lista li {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.detalle-lista li span {
+    color: #777;
+}
+
+.detalle-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.detalle-cantidad {
+    width: 140px;
+    flex-shrink: 0;
+}
+
+.detalle-cantidad .form-control {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.detalle-volver {
+    display: inline-block;
+    margin-top: 20px;
+    color: #6C2A8A;
+    text-decoration: none;
+}
+
+.detalle-volver:hover {
     text-decoration: underline;
 }
