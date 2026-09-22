@@ -3,16 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Producto | Huellitas Club</title>
+
+    <title>Carrito | Huellitas Club</title>
+
     <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <link rel="stylesheet" href="css/miestilo.css">
 </head>
+
 <body>
 
+    <!-- ================= NAVBAR ================= -->
 
-<!--Navbar               -->
- <nav class="navbar navbar-expand-sm navbar-dark">
+    <nav class="navbar navbar-expand-sm navbar-dark">
         <div class="container-fluid">
 
             <!-- Logo -->
@@ -332,136 +337,241 @@
         </div>
     </nav>
 
-<!-- Detalle del producto -->
-<main class="detalle-producto">
 
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index.html">Inicio</a></li>
-            <li class="breadcrumb-item"><a href="catalogo.html">Catálogo</a></li>
-            <li class="breadcrumb-item active" aria-current="page" id="migaNombre">Producto</li>
-        </ol>
-    </nav>
+    <!-- ================= CARRITO ================= -->
 
-    <!-- Aquí se dibuja el producto -->
-    <div id="detalle"></div>
+    <main class="container my-5">
 
-</main>
+        <h1 class="text-center mb-5">
+            <i class="bi bi-cart3"></i>
+            Mi carrito
+        </h1>
 
 
+        <!-- Aquí JavaScript mostrará los productos -->
+        <div id="carrito-container">
+
+        </div>
 
 
+        <!-- Aquí JavaScript mostrará el total -->
+        <div id="carrito-resumen">
 
-    <!-- Footer Basado en el que hizo el profe-->
-    <footer class="text-light pt-5 pb-3" style="background-color: #6C2A8A; font-family:'Terraria';">
+        </div>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer class="text-light pt-5 pb-3"
+            style="background-color: #6C2A8A; font-family:'Terraria';">
+
         <div class="container">
+
             <div class="row g-4">
 
                 <!-- Información -->
                 <div class="col-lg-4 col-md-6">
-                    <h5 class="fw-bold mb-3">Huellitas Club</h5>
+
+                    <h5 class="fw-bold mb-3">
+                        Huellitas Club
+                    </h5>
+
                     <p class="text-white-50">
                         Petshop Oficial
                     </p>
 
-                    <a href="https://wa.me/56967144636" target="_blank" class="btn btn-success">
+                    <a href="https://wa.me/56967144636"
+                       target="_blank"
+                       class="btn btn-success">
+
                         <i class="bi bi-whatsapp"></i>
                         WhatsApp
+
                     </a>
+
                 </div>
+
 
                 <!-- Enlaces -->
                 <div class="col-lg-2 col-md-6">
-                    <h6 class="fw-bold mb-3">Enlaces</h6>
+
+                    <h6 class="fw-bold mb-3">
+                        Enlaces
+                    </h6>
+
                     <ul class="list-unstyled">
+
                         <li class="mb-2">
-                            <a href="index.html" class="text-white-50 text-decoration-none">
+
+                            <a href="index.html"
+                               class="text-white-50 text-decoration-none">
+
                                 Inicio
+
                             </a>
+
                         </li>
+
                         <li class="mb-2">
-                            <a href="informacion.html" class="text-white-50 text-decoration-none">
+
+                            <a href="informacion.html"
+                               class="text-white-50 text-decoration-none">
+
                                 Sobre Nosotros
+
                             </a>
+
                         </li>
+
                     </ul>
+
                 </div>
+
 
                 <!-- Contacto -->
                 <div class="col-lg-3 col-md-6">
-                    <h6 class="fw-bold mb-3">Contacto</h6>
+
+                    <h6 class="fw-bold mb-3">
+                        Contacto
+                    </h6>
 
                     <p class="text-white-50 mb-2">
+
                         <i class="bi bi-geo-alt me-2"></i>
                         Concepción, Chile
+
                     </p>
 
                     <p class="text-white-50 mb-2">
+
                         <i class="bi bi-telephone me-2"></i>
-                        <a href="tel:+56912345678" class="text-white-50 text-decoration-none">
+
+                        <a href="tel:+56912345678"
+                           class="text-white-50 text-decoration-none">
+
                             +56 9 6714 4636
+
                         </a>
+
                     </p>
 
                     <p class="text-white-50 mb-0">
+
                         <i class="bi bi-envelope me-2"></i>
-                        <a href="mailto:contacto@miempresa.cl" class="text-white-50 text-decoration-none">
+
+                        <a href="mailto:contacto@miempresa.cl"
+                           class="text-white-50 text-decoration-none">
+
                             huellitasclub@huellitas.cl
+
                         </a>
+
                     </p>
+
                 </div>
+
 
                 <!-- Redes sociales -->
                 <div class="col-lg-3 col-md-6">
-                    <h6 class="fw-bold mb-3">Síguenos</h6>
+
+                    <h6 class="fw-bold mb-3">
+                        Síguenos
+                    </h6>
 
                     <div class="d-flex gap-3">
-                        <a href="#" class="text-white fs-4" aria-label="Facebook">
+
+                        <a href="#"
+                           class="text-white fs-4"
+                           aria-label="Facebook">
+
                             <i class="bi bi-facebook"></i>
+
                         </a>
 
-                        <a href="#" class="text-white fs-4" aria-label="Instagram">
+                        <a href="#"
+                           class="text-white fs-4"
+                           aria-label="Instagram">
+
                             <i class="bi bi-instagram"></i>
+
                         </a>
 
-                        <a href="#" class="text-white fs-4" aria-label="LinkedIn">
+                        <a href="#"
+                           class="text-white fs-4"
+                           aria-label="LinkedIn">
+
                             <i class="bi bi-linkedin"></i>
+
                         </a>
 
-                        <a href="https://wa.me/56912345678" target="_blank" class="text-white fs-4"
-                            aria-label="WhatsApp">
+                        <a href="https://wa.me/56912345678"
+                           target="_blank"
+                           class="text-white fs-4"
+                           aria-label="WhatsApp">
+
                             <i class="bi bi-whatsapp"></i>
+
                         </a>
+
                     </div>
+
                 </div>
 
             </div>
+
 
             <hr class="border-secondary my-4">
 
+
             <!-- Copyright -->
             <div class="row align-items-center">
+
                 <div class="col-md-6 text-center text-md-start">
+
                     <small class="text-white-50">
-                        © 2026 Mi Empresa. Todos los derechos reservados.
+
+                        © 2026 Mi Empresa.
+                        Todos los derechos reservados.
+
                     </small>
+
                 </div>
+
 
                 <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
-                    <a href="#" class="text-white-50 text-decoration-none me-3">
+
+                    <a href="#"
+                       class="text-white-50 text-decoration-none me-3">
+
                         Política de privacidad
+
                     </a>
 
-                    <a href="#" class="text-white-50 text-decoration-none">
+                    <a href="#"
+                       class="text-white-50 text-decoration-none">
+
                         Términos y condiciones
+
                     </a>
+
                 </div>
+
             </div>
+
         </div>
+
     </footer>
 
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/productos.js"></script>
-    <script src="js/producto.js"></script>
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script src="jS/bootstrap.bundle.min.js"></script>
+
+    <script src="jS/carrito.js"></script>
+
+    <script src="JS/navbar.js"></script>
+
 </body>
-</html>
+</html>     

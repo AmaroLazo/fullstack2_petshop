@@ -62,8 +62,10 @@ function iniciarSesion(event) {
     const correoAdmin = "admin@huellitas.cl";
     const passwordAdmin = "admin123";
 
-
+    const correoprueba="usuario@gmail.cl";
+    const passwordprueba="user123";
     // Comprobar si es administrador
+   
     if (correo === correoAdmin && password === passwordAdmin) {
 
         localStorage.setItem("sesionActiva", "true");
@@ -71,6 +73,16 @@ function iniciarSesion(event) {
         localStorage.setItem("nombreUsuario", "Administrador");
 
         window.location.href = "dashboard_admin.html";
+
+        return;
+    }
+    if (correo === correoprueba && password === passwordprueba) {
+
+        localStorage.setItem("sesionActiva", "true");
+        localStorage.setItem("rol", "usuario");
+        localStorage.setItem("nombreUsuario", "usuario");
+
+        window.location.href = "index.html";
 
         return;
     }

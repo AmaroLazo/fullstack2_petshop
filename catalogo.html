@@ -117,16 +117,60 @@
             <!-- Botones derecha -->
             <div class="navbar-derecha">
 
-                <a href="login.html" class="btn btn-light">
+    <div class="dropdown">
+        <button class="btn btn-light dropdown-toggle"
+                type="button"
+                id="botonUsuario"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+
+            <i class="bi bi-person"></i>
+            <span id="textoUsuario">Iniciar Sesión</span>
+
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end" id="menuUsuario">
+
+            <li>
+                <a class="dropdown-item" href="perfil.html">
                     <i class="bi bi-person"></i>
-                    Iniciar Sesión
+                    Ver perfil
                 </a>
+            </li>
 
-                <a href="carrito.html" class="btn btn-light">
-                    <i class="bi bi-cart"></i>
+            <li>
+                <a class="dropdown-item" href="historial.html">
+                    <i class="bi bi-clock-history"></i>
+                    Historial de compras
                 </a>
+            </li>
 
-            </div>
+            <li>
+                <a class="dropdown-item" href="cuenta.html">
+                    <i class="bi bi-gear"></i>
+                    Opciones de cuenta
+                </a>
+            </li>
+
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+
+            <li>
+                <a class="dropdown-item" href="#" onclick="cerrarSesion()">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Cerrar sesión
+                </a>
+            </li>
+
+        </ul>
+    </div>
+
+    <a href="carrito.html" class="btn btn-light">
+        <i class="bi bi-cart"></i>
+    </a>
+
+</div>
 
         </div>
     </div>
@@ -446,5 +490,7 @@
 
     <!-- Filtros del catálogo -->
     <script src="js/catalogo.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
