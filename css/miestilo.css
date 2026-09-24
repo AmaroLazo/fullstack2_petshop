@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 * {
     box-sizing: border-box;
     margin: 0;
@@ -344,10 +345,813 @@ body {
 }
 
 .featured-section h2 {
+=======
+/* ==========================================================
+   MIESTILO.CSS
+   Unificación de: Tipografia, ColoresPagina, Footer, navbar,
+   Banner, carrusel, Productos y login
+   ========================================================== */
+
+
+/* ==========================================================
+   1. TIPOGRAFÍA
+   ========================================================== */
+
+@font-face {
+    font-family: 'Terraria';
+    /* Si miestilo.css está en la misma carpeta que los antiguos CSS,
+       esta ruta sigue funcionando. Si lo mueves, ajústala. */
+    src: url('../fonts/Terraria.ttf') format('truetype');
+}
+
+html {
+    /* Base de fuente fluida: crece/decrece con el ancho de pantalla,
+       desde celulares angostos hasta monitores ultra-wide/4K */
+    font-size: clamp(14px, 0.9vw + 10px, 18px);
+}
+
+
+/* ==========================================================
+   2. BODY (tipografía + colores + layout del footer)
+   ========================================================== */
+
+body {
+    /* Layout: footer siempre al fondo */
+    height: 100%;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    /* Tipografía */
+    font-family: 'Terraria', sans-serif;
+    overflow-x: hidden; /* evita scroll horizontal en pantallas muy angostas */
+
+    /* Color de fondo */
+    background-color: #FAF7FC;
+}
+
+header {
+    font-family: 'Terraria', sans-serif;
+}
+
+
+/* ==========================================================
+   3. COLORES DE LA PÁGINA
+   ========================================================== */
+
+.navbar {
+    background-color: #3D2645 !important;
+}
+
+footer {
+    background-color: #3D2645 !important;
+}
+
+.btn {
+    background-color: #F7931E;
+    color: #D9C7E0;
+    border-color: #F7931E;
+}
+
+.btn:hover {
+    background-color: #FF6B35;
+    color: #D9C7E0;
+    border-color: #FF6B35;
+}
+
+
+/* ----------------------------------------------------------
+   PALETAS ALTERNATIVAS (comentadas)
+   Para usar una, comenta la paleta activa de arriba y
+   descomenta la que quieras.
+   ---------------------------------------------------------- */
+
+/* Paleta oscura
+
+body {
+    background-color: #12081C;
+}
+
+.navbar {
+    background-color: #1E0F2E !important;
+}
+
+footer {
+    background-color: #1E0F2E !important;
+}
+
+.btn {
+    background-color: #00E5A0;
+    color: #F5F0FF;
+    border-color: #FFB627;
+}
+
+.btn:hover {
+    background-color: #00E5A0;
+    color: #F5F0FF;
+    border-color: #FFB627;
+}
+*/
+
+
+/* Paleta cálida
+
+body {
+    background-color: #FFF8F0;
+}
+
+.navbar {
+    background-color: #2B1B3D !important;
+}
+
+footer {
+    background-color: #2B1B3D !important;
+}
+
+.btn {
+    background-color: #FF6B35;
+    color: white;
+    border-color: #FF3D68;
+}
+
+.btn:hover {
+    background-color: #FF6B35;
+    color: white;
+    border-color: #FF3D68;
+}
+*/
+
+
+/* Paleta morada clara
+
+body {
+    background-color: #F8F5FA;
+}
+
+.navbar {
+    background-color: #6C2A8A !important;
+}
+
+footer {
+    background-color: #6C2A8A !important;
+}
+*/
+
+
+/* ==========================================================
+   4. FOOTER
+   ========================================================== */
+
+footer {
+    margin-top: auto;
+}
+
+footer .container {
+    padding-left: clamp(12px, 4vw, 24px);
+    padding-right: clamp(12px, 4vw, 24px);
+}
+
+
+/* ==========================================================
+   5. NAVBAR
+   ========================================================== */
+
+/* ----- Logo ----- */
+
+.logo-navbar {
+    width: clamp(60px, 8vw, 130px);
+    height: clamp(60px, 8vw, 130px);
+    object-fit: contain;
+
+    /* Evita que el logo modifique la altura del navbar */
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Contenedor del logo y nombre */
+.navbar-brand {
+    position: relative;
+
+    height: clamp(40px, 6vw, 50px);
+
+    display: flex;
+    align-items: center;
+
+    /* Espacio para que el texto no quede debajo del logo, escala con el logo */
+    padding-left: clamp(65px, 9vw, 120px);
+
+    max-width: 100%;
+}
+
+/* Nombre Huellitas Club */
+.navbar-brand span {
+    font-size: clamp(1.1rem, 1vw + 1rem, 1.875rem);
+    white-space: nowrap;
+}
+
+
+/* ----- Centro del navbar ----- */
+
+.navbar-centro {
+    width: 45%;
+    max-width: 700px; /* evita que se estire demasiado en monitores ultra-wide */
+
+    margin: 0 auto;
+}
+
+
+/* ----- Búsqueda ----- */
+
+.busqueda {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Contenedor del botón Home */
+.busqueda > a {
+    position: relative;
+
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-right: 10px;
+}
+
+/* Icono Home */
+.busqueda > a img {
+    width: clamp(40px, 6vw, 80px);
+    height: clamp(40px, 6vw, 80px);
+
+    object-fit: contain;
+
+    /* Evita que el Home modifique la altura del navbar */
+    position: absolute;
+}
+
+/* Formulario de búsqueda */
+.busqueda form {
+    flex: 1;
+}
+
+.busqueda input {
+    height: 35px;
+}
+
+.busqueda button {
+    height: 35px;
+}
+
+
+/* ----- Categorías ----- */
+
+.categorias-navbar {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* Botones de categorías */
+.btn-categoria {
+    color: white;
+    border: none;
+}
+
+/* Efecto al pasar el mouse */
+.btn-categoria:hover,
+.btn-categoria:focus {
+    color: #E8C9F5;
+}
+
+
+/* ----- Menú desplegable ----- */
+
+.dropdown-menu {
+    min-width: 190px;
+}
+
+
+/* ----- Botones derecha ----- */
+
+.navbar-derecha {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+
+/* ----- Navbar responsive ----- */
+
+@media (max-width: 768px) {
+
+    .navbar-centro {
+        width: 100%;
+        margin-top: 15px;
+    }
+
+    .categorias-navbar {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .navbar-derecha {
+        margin-top: 15px;
+        justify-content: center;
+    }
+
+    .logo-navbar {
+        width: 90px;
+        height: 90px;
+        left: 5px;
+    }
+
+    .navbar-brand {
+        padding-left: 85px;
+    }
+
+    .navbar-brand span {
+        font-size: 24px;
+    }
+}
+
+/* Pantallas muy angostas: plegables cerrados, relojes, celulares chicos (<380px) */
+@media (max-width: 380px) {
+
+    .navbar-brand span {
+        font-size: 15px;
+    }
+
+    .logo-navbar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .navbar-brand {
+        padding-left: 60px;
+    }
+
+    .busqueda {
+        flex-wrap: wrap;
+        row-gap: 6px;
+    }
+
+    .busqueda form {
+        width: 100%;
+        flex: 0 0 100%;
+    }
+
+    .btn-categoria {
+        font-size: 0.85rem;
+        padding: 4px 8px;
+    }
+
+    .navbar-derecha {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .navbar-derecha .btn {
+        font-size: 0.85rem;
+        padding: 4px 10px;
+    }
+}
+
+/* Tablets en vertical / pantallas intermedias: más aire entre categorías */
+@media (min-width: 769px) and (max-width: 1024px) {
+
+    .navbar-centro {
+        width: 60%;
+    }
+
+    .categorias-navbar {
+        flex-wrap: wrap;
+        row-gap: 6px;
+    }
+}
+
+/* Monitores ultra-wide: evita que los botones de categorías queden
+   demasiado separados entre sí */
+@media (min-width: 1800px) {
+
+    .categorias-navbar {
+        gap: 30px;
+    }
+}
+
+
+/* ==========================================================
+   6. BANNER
+   ========================================================== */
+
+.hero-banner {
+    width: min(92%, 1200px);
+    margin: clamp(16px, 3vw, 30px) auto;
+}
+
+.banner-card {
+    background-color: #3D2645;
+    color: white;
+    padding: clamp(18px, 4vw, 35px);
+    border-radius: 15px;
+    text-align: center;
+}
+
+.banner-card h1 {
+    margin-bottom: 10px;
+    font-size: clamp(1.3rem, 1.1rem + 1.8vw, 2rem);
+    line-height: 1.2;
+}
+
+.banner-card p {
+    margin: 0;
+    font-size: clamp(0.85rem, 0.7rem + 0.6vw, 1.125rem);
+}
+
+
+/* ==========================================================
+   7. CARRUSEL
+   ========================================================== */
+
+.carrusel-principal {
+    width: min(92%, 1200px);
+    margin: clamp(16px, 3vw, 30px) auto;
+}
+
+.carrusel-principal img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: auto;
+    max-height: none;
+    object-fit: contain;
+    border-radius: 15px;
+}
+
+/* Pantallas muy angostas: recorte más vertical para no perder el sujeto de la foto */
+@media (max-width: 420px) {
+
+    .carrusel-principal img {
+        aspect-ratio: 4 / 3;
+    }
+}
+
+/* Flechas del carrusel más chicas y con mejor contraste en móvil */
+@media (max-width: 576px) {
+
+    .carrusel-principal .carousel-control-prev-icon,
+    .carrusel-principal .carousel-control-next-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+        background-color: rgba(0, 0, 0, 0.35);
+        border-radius: 50%;
+        padding: 4px;
+    }
+}
+
+
+/* ==========================================================
+   8. PRODUCTOS
+   ========================================================== */
+
+.productos-recomendados {
+    width: min(92%, 1200px);
+    margin: clamp(24px, 5vw, 40px) auto;
+}
+
+.productos-recomendados h2 {
+    text-align: center;
+    margin-bottom: clamp(18px, 3vw, 30px);
+    font-size: clamp(1.3rem, 1rem + 1.2vw, 1.75rem);
+}
+
+.productos-grid {
+    display: grid;
+    /* Grilla fluida: cada tarjeta pide un mínimo de ~220px y el grid
+       decide solo cuántas columnas caben, desde 1 columna en pantallas
+       diminutas hasta muchas columnas en monitores 4K/ultra-wide */
+    grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+    gap: clamp(14px, 2.5vw, 25px);
+}
+
+.producto {
+    background-color: white;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    min-width: 0; /* evita que el grid se rompa con contenido ancho */
+}
+
+.producto img {
+    width: 100%;
+    height: clamp(140px, 20vw, 200px);
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.producto h3 {
+    margin-top: 15px;
+    font-size: clamp(1rem, 0.85rem + 0.5vw, 1.25rem);
+}
+
+.producto p {
+    font-size: clamp(0.8rem, 0.75rem + 0.2vw, 0.875rem);
+    min-height: 40px;
+}
+
+.producto span {
+    display: block;
+    margin-top: 10px;
+    font-size: clamp(0.95rem, 0.85rem + 0.3vw, 1.125rem);
+    font-weight: bold;
+    color: #6C2A8A;
+}
+
+.boton-mas-productos {
+    text-align: center;
+    margin-top: 35px;
+}
+
+.boton-mas-productos a {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #6C2A8A;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.boton-mas-productos a:hover {
+    background-color: #57216F;
+}
+
+/* Pantallas extremadamente angostas: una sola columna centrada y tarjeta
+   sin forzar mínimo de 220px (para no generar scroll horizontal) */
+@media (max-width: 260px) {
+
+    .productos-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Monitores muy anchos (ultra-wide / múltiples monitores): tope de ancho
+   por tarjeta para que no queden gigantes con pocas columnas */
+@media (min-width: 1600px) {
+
+    .productos-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
+        justify-content: center;
+    }
+}
+
+
+/* ==========================================================
+   9. LOGIN
+   ========================================================== */
+
+.login-container {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 30px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 450px;
+
+    background-color: white;
+
+    padding: 40px;
+
+    border-radius: 15px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+
+    text-align: center;
+}
+
+.login-logo {
+    width: 80px;
+    height: 80px;
+
+    object-fit: contain;
+
+    margin-bottom: 10px;
+}
+
+.login-card h1 {
+    color: #6C2A8A;
+    margin-bottom: 25px;
+}
+
+.login-card h2 {
+    margin-bottom: 5px;
+}
+
+.login-subtitulo {
+    color: #777;
+    margin-bottom: 25px;
+}
+
+.campo {
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.campo input {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.campo input:focus {
+    outline: none;
+    border-color: #6C2A8A;
+    box-shadow: 0 0 0 2px rgba(108, 42, 138, 0.15);
+}
+
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+
+    background-color: #6C2A8A;
+    color: white;
+
+    border: none;
+    border-radius: 8px;
+
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn-login:hover {
+    background-color: #57216F;
+}
+
+.cambiar-formulario {
+    margin-top: 20px;
+}
+
+.cambiar-formulario a {
+    color: #6C2A8A;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.cambiar-formulario a:hover {
+    text-decoration: underline;
+}
+
+.mensaje-error {
+    color: #c62828;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+.volver {
+    display: block;
+    margin-top: 25px;
+    color: #6C2A8A;
+    text-decoration: none;
+}
+
+.volver:hover {
+    text-decoration: underline;
+}
+
+
+/* ==========================================================
+   10. CATÁLOGO
+   ========================================================== */
+
+.catalogo-filtros {
+    background-color: white;
+    border-radius: 12px;
+    padding: clamp(12px, 2.5vw, 20px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    margin-bottom: clamp(14px, 2.5vw, 25px);
+}
+
+.catalogo-filtros .form-label {
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+    color: #3D2645;
+}
+
+.catalogo-contador {
+    color: #777;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+.catalogo-sin-resultados {
+    text-align: center;
+    padding: 40px 15px;
+    color: #777;
+}
+
+
+/* ==========================================================
+   11. TARJETAS DE PRODUCTO CLICKEABLES
+   (el enlace del título cubre toda la tarjeta con stretched-link)
+   ========================================================== */
+
+.producto {
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.producto:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ==========================================================
+   12. DETALLE DE PRODUCTO
+   ========================================================== */
+
+.detalle-producto {
+    width: min(92%, 1200px);
+    margin: clamp(16px, 3vw, 30px) auto;
+}
+
+.detalle-producto .breadcrumb a {
+    color: #6C2A8A;
+    text-decoration: none;
+}
+
+.detalle-producto .breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.detalle-card {
+    background-color: white;
+    border-radius: 15px;
+    padding: clamp(16px, 3vw, 30px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.detalle-imagen {
+    background-color: #FAF7FC;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.detalle-imagen img {
+    width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+}
+
+.detalle-nombre {
+    font-size: clamp(1.4rem, 1.1rem + 1.5vw, 2.2rem);
+    color: #3D2645;
+    margin-bottom: 10px;
+}
+
+.detalle-etiqueta {
+    display: inline-block;
+    background-color: #E8C9F5;
+    color: #3D2645;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 0.85rem;
+    margin: 0 6px 6px 0;
+}
+
+.detalle-precio {
+    font-size: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
+    font-weight: bold;
+>>>>>>> origin/master
     color: #6C2A8A;
     margin-bottom: 10px;
 }
 
+<<<<<<< HEAD
 .featured-section p {
     color: #555555;
     line-height: 1.5;
@@ -413,4 +1217,50 @@ body {
 .club-banner p {
     font-size: 14px;
     line-height: 1.4;
+=======
+.detalle-lista {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.detalle-lista li {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.detalle-lista li span {
+    color: #777;
+}
+
+.detalle-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.detalle-cantidad {
+    width: 140px;
+    flex-shrink: 0;
+}
+
+.detalle-cantidad .form-control {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.detalle-volver {
+    display: inline-block;
+    margin-top: 20px;
+    color: #6C2A8A;
+    text-decoration: none;
+}
+
+.detalle-volver:hover {
+    text-decoration: underline;
+>>>>>>> origin/master
 }
