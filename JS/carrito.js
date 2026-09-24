@@ -110,13 +110,33 @@ function mostrarCarrito() {
                         Cantidad
                     </label>
 
-                    <input
-                        type="number"
-                        min="1"
-                        value="${producto.cantidad}"
-                        class="form-control text-center"
-                        onchange="cambiarCantidad(${indice}, this.value)"
-                    >
+                    <div class="input-group detalle-cantidad">
+
+                        <button
+                            class="btn"
+                            type="button"
+                            title="Disminuir cantidad"
+                            onclick="cambiarCantidad(${indice}, ${producto.cantidad - 1})">
+                            −
+                        </button>
+
+                        <input
+                            type="number"
+                            min="1"
+                            value="${producto.cantidad}"
+                            class="form-control text-center"
+                            onchange="cambiarCantidad(${indice}, this.value)"
+                        >
+
+                        <button
+                            class="btn"
+                            type="button"
+                            title="Aumentar cantidad"
+                            onclick="cambiarCantidad(${indice}, ${producto.cantidad + 1})">
+                            +
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -283,6 +303,6 @@ function eliminarProducto(indice) {
 
 function continuarCompra() {
 
-    window.location.href = "envio.html";
+    window.location.href = "pagos.html";
 
 }

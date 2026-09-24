@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pago | Huellitas Club</title>
+    <title>Opciones de cuenta | Huellitas Club</title>
+    <script>
+        // Si no hay sesión iniciada, no se puede ver esta página
+        if (localStorage.getItem('sesionActiva') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="css/miestilo.css">
@@ -176,118 +182,49 @@
     </div>
 </nav>
 
+<!-- ================= OPCIONES DE CUENTA ================= -->
 
-<!-- ================= PAGO ================= -->
+<main class="cuenta-container">
 
-<main class="pago-container">
+    <h1 class="text-center mb-4"><i class="bi bi-gear"></i> Opciones de cuenta</h1>
 
-    <h1 class="text-center mb-4"><i class="bi bi-credit-card"></i> Pago</h1>
+    <div class="cuenta-card mx-auto">
 
-    <div class="row g-4 justify-content-center">
+        <h2 class="h5 mb-3">Nombre de usuario</h2>
 
-        <!-- Resumen del pedido -->
-        <div class="col-12 col-lg-5">
-            <div class="pago-resumen">
-
-                <h2 class="h5 mb-3">Resumen de tu compra</h2>
-
-                <div id="resumenLista"></div>
-
-                <div class="pago-total">
-                    <span>Total</span>
-                    <strong id="resumenTotal">$0</strong>
-                </div>
-
+        <form id="formNombre">
+            <div class="campo">
+                <label for="cuentaNombre">Nombre para mostrar</label>
+                <input type="text" id="cuentaNombre" required>
             </div>
+            <p id="nombreMensaje" class="mensaje-error"></p>
+            <button type="submit" class="btn-login">Guardar nombre</button>
+        </form>
+
+        <hr class="my-4">
+
+        <div id="bloqueContrasena">
+            <h2 class="h5 mb-3">Cambiar contraseña</h2>
+
+            <form id="formContrasena">
+                <div class="campo">
+                    <label for="cuentaPasswordActual">Contraseña actual</label>
+                    <input type="password" id="cuentaPasswordActual" required>
+                </div>
+                <div class="campo">
+                    <label for="cuentaPasswordNueva">Contraseña nueva</label>
+                    <input type="password" id="cuentaPasswordNueva" required>
+                </div>
+                <p id="passwordMensaje" class="mensaje-error"></p>
+                <button type="submit" class="btn-login">Cambiar contraseña</button>
+            </form>
         </div>
 
-        <!-- Formulario de pago -->
-        <div class="col-12 col-lg-6">
-            <div class="pago-card" id="pagoCard">
+        <hr class="my-4">
 
-                <h2 class="h5 mb-3">Datos de pago</h2>
-
-                <!-- Método de pago -->
-                <div class="metodo-pago">
-
-                    <input type="radio" name="metodo" id="metodoDebito" value="debito" class="btn-check" checked>
-                    <label class="btn-metodo" for="metodoDebito">
-                        <i class="bi bi-bank"></i> Débito
-                    </label>
-
-                    <input type="radio" name="metodo" id="metodoCredito" value="credito" class="btn-check">
-                    <label class="btn-metodo" for="metodoCredito">
-                        <i class="bi bi-credit-card-2-front"></i> Crédito
-                    </label>
-
-                </div>
-
-                <!-- Vista previa de la tarjeta -->
-                <div class="tarjeta-preview">
-                    <div class="tarjeta-preview-top">
-                        <span id="previewTipo">Débito</span>
-                        <i class="bi bi-wifi"></i>
-                    </div>
-                    <div class="tarjeta-preview-numero" id="previewNumero">•••• •••• •••• ••••</div>
-                    <div class="tarjeta-preview-bottom">
-                        <span id="previewNombre">NOMBRE APELLIDO</span>
-                        <span id="previewVencimiento">MM/AA</span>
-                    </div>
-                </div>
-
-                <!-- Formulario -->
-                <form id="formPago" novalidate>
-
-                    <div class="campo">
-                        <label for="pagoNombre">Nombre en la tarjeta</label>
-                        <input type="text" id="pagoNombre" placeholder="Como aparece en la tarjeta" required>
-                    </div>
-
-                    <div class="campo">
-                        <label for="pagoNumero">Número de tarjeta</label>
-                        <input type="text" id="pagoNumero" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" required>
-                    </div>
-
-                    <div class="row g-3">
-                        <div class="col-7">
-                            <div class="campo">
-                                <label for="pagoVencimiento">Vencimiento</label>
-                                <input type="text" id="pagoVencimiento" inputmode="numeric" placeholder="MM/AA" maxlength="5" required>
-                            </div>
-                        </div>
-                        <div class="col-5">
-                            <div class="campo">
-                                <label for="pagoCvv">CVV</label>
-                                <input type="text" id="pagoCvv" inputmode="numeric" placeholder="123" maxlength="3" required>
-                            </div>
-                        </div>
-                    </div>
-
-                    <p id="pagoError" class="mensaje-error"></p>
-
-                    <button type="submit" class="btn-login" id="btnPagar">
-                        <span id="btnPagarTexto">Pagar</span>
-                    </button>
-
-                </form>
-
-                <p class="pago-seguro">
-                    <i class="bi bi-shield-lock"></i>
-                    Esto es una simulación, no se procesa ningún pago real.
-                </p>
-
-            </div>
-
-            <!-- Mensaje de éxito -->
-            <div class="pago-exito" id="pagoExito" hidden>
-                <i class="bi bi-check-circle-fill"></i>
-                <h2>¡Compra completada!</h2>
-                <p>Tu pedido <strong id="exitoNumero"></strong> fue procesado con éxito.</p>
-                <p class="text-white-50">Recibirás un correo con los detalles de tu compra.</p>
-                <a href="index.html" class="btn-login d-inline-block">Volver al inicio</a>
-            </div>
-
-        </div>
+        <button type="button" class="btn-login" style="background-color:#c62828;" onclick="cerrarSesion()">
+            <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+        </button>
 
     </div>
 
@@ -402,7 +339,7 @@
     </footer>
 
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/pagos.js"></script>
+    <script src="js/cuenta.js"></script>
     <script src="js/navbar.js"></script>
 </body>
 </html>

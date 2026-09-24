@@ -1,52 +1,77 @@
-document.addEventListener("DOMContentLoaded", function () {
+/* =========================================================
+   NAVBAR - botón de usuario (arriba a la derecha)
+   Lo cargan todas las páginas que tengan este menú, con:
+       <script src="js/navbar.js"></script>
+   ---------------------------------------------------------
+   Antes, si no había sesión iniciada, el botón dejaba de ser
+   un menú desplegable (se le quitaba el atributo que lo abre)
+   y el contenido de "Ver perfil / Historial / Opciones de
+   cuenta / Cerrar sesión" quedaba igual en el HTML. Si algo
+   fallaba antes de llegar a esa parte, se alcanzaba a ver ese
+   menú completo aunque el usuario no tuviera sesión.
+   Ahora el contenido del menú (los <li>) se rellena siempre
+   desde acá, así que nunca muestra las opciones de una cuenta
+   con sesión si no la hay.
+   ========================================================= */
 
-    const sesionActiva = localStorage.getItem("sesionActiva");
-    const nombreUsuario = localStorage.getItem("nombreUsuario");
+document.addEventListener("DOMContentLoaded", function () {
 
     const botonUsuario = document.getElementById("botonUsuario");
     const textoUsuario = document.getElementById("textoUsuario");
     const menuUsuario = document.getElementById("menuUsuario");
 
+    // Si esta página no tiene el menú de usuario, no hacemos nada
+    if (!botonUsuario || !textoUsuario || !menuUsuario) return;
 
-    // ==========================================
-    // USUARIO CON SESIÓN INICIADA
-    // ==========================================
+    const sesionActiva = localStorage.getItem("sesionActiva") === "true";
+    const nombreUsuario = localStorage.getItem("nombreUsuario");
 
-    if (sesionActiva === "true" && nombreUsuario) {
+    if (sesionActiva && nombreUsuario) {
+
+        // ==========================================
+        // USUARIO CON SESIÓN INICIADA
+        // ==========================================
 
         textoUsuario.textContent = "Hola, " + nombreUsuario;
 
-        // El botón funciona como dropdown
-        botonUsuario.setAttribute("data-bs-toggle", "dropdown");
-
-        // Mostrar menú
-        menuUsuario.style.display = "";
-
+        menuUsuario.innerHTML = `
+            <li>
+                <a class="dropdown-item" href="perfil.html">
+                    <i class="bi bi-person"></i> Ver perfil
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="historial.html">
+                    <i class="bi bi-clock-history"></i> Historial de compras
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="cuenta.html">
+                    <i class="bi bi-gear"></i> Opciones de cuenta
+                </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <a class="dropdown-item" href="#" onclick="cerrarSesion()">
+                    <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                </a>
+            </li>`;
 
     } else {
 
         // ==========================================
-        // USUARIO SIN SESIÓN
+        // USUARIO SIN SESIÓN: solo puede registrarse
         // ==========================================
 
         textoUsuario.textContent = "Iniciar Sesión";
 
-        // Quitamos el dropdown
-        botonUsuario.removeAttribute("data-bs-toggle");
-
-        // Ocultamos el menú
-        menuUsuario.style.display = "none";
-
-
-        // Al hacer clic → login
-        botonUsuario.addEventListener("click", function () {
-
-            window.location.href = "login.html";
-
-        });
-
+        menuUsuario.innerHTML = `
+            <li>
+                <a class="dropdown-item" href="login.html">
+                    <i class="bi bi-person-plus"></i> Registrarse
+                </a>
+            </li>`;
     }
-
 });
 
 
@@ -60,6 +85,5 @@ function cerrarSesion() {
     localStorage.removeItem("rol");
     localStorage.removeItem("nombreUsuario");
 
-    // Redirigir al inicio
     window.location.href = "index.html";
-}   
+}

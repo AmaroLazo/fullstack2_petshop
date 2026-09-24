@@ -1,16 +1,6 @@
 /* =========================================================
    BASE DE PRODUCTOS - Huellitas Club
    ---------------------------------------------------------
-   producto.html?id=NUMERO muestra el producto con ese id.
-   Para agregar uno nuevo: copia una línea, cambia el id
-   (no repetir) y completa los datos.
-
-   resumen:   (opcional) texto corto para la tarjeta del catálogo.
-              Si no lo pones, se usa el inicio de la descripción.
-   animal:    "perros", "gatos", "aves", "roedores", "peces", "reptiles"
-              (puede tener varios: ["perros", "gatos"])
-   categoria: "alimentos", "snacks", "juguetes", "accesorios",
-              "higiene", "camas"
    ========================================================= */
 
 const PRODUCTOS = [
