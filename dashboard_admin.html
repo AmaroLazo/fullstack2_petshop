@@ -1,1861 +1,226 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Dashboard Administrativo - Huellitas Club</title>
-
-    <!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="css/miestilo.css">
-
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <style>
-
-        /* =========================
-           GENERAL
-        ========================= */
-
-        body {
-            margin: 0;
-            background-color: #F8F5FA;
-            font-family: Arial, sans-serif;
-        }
-
-
-        /* =========================
-           NAVBAR
-        ========================= */
-
-        .admin-navbar {
-            height: 70px;
-            background-color: #6C2A8A;
-            color: white;
-
-            display: flex;
-            align-items: center;
-
-            padding: 0 25px;
-        }
-
-        .admin-logo {
-            display: flex;
-            align-items: center;
-
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .admin-logo img {
-            width: 50px;
-            height: 50px;
-
-            object-fit: contain;
-
-            margin-right: 10px;
-        }
-
-        .admin-user {
-            margin-left: auto;
-
-            display: flex;
-            align-items: center;
-
-            gap: 10px;
-        }
-
-
-        /* =========================
-           CONTENEDOR
-        ========================= */
-
-        .dashboard-container {
-            display: flex;
-
-            min-height: calc(100vh - 70px);
-        }
-
-
-        /* =========================
-           SIDEBAR
-        ========================= */
-
-        .sidebar {
-            width: 250px;
-
-            background-color: #38203F;
-
-            color: white;
-
-            padding: 20px 15px;
-        }
-
-        .sidebar h5 {
-            margin-bottom: 20px;
-
-            color: #E8C9F5;
-        }
-
-        .sidebar button {
-            width: 100%;
-
-            border: none;
-
-            background: transparent;
-
-            color: white;
-
-            text-align: left;
-
-            padding: 12px;
-
-            margin-bottom: 5px;
-
-            border-radius: 8px;
-        }
-
-        .sidebar button:hover,
-        .sidebar button.active {
-            background-color: #6C2A8A;
-        }
-
-        .sidebar i {
-            margin-right: 10px;
-        }
-
-
-        /* =========================
-           CONTENIDO
-        ========================= */
-
-        .main-content {
-            flex: 1;
-
-            padding: 25px;
-
-            overflow-x: hidden;
-        }
-
-        .dashboard-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            margin-bottom: 25px;
-        }
-
-        .dashboard-title h1 {
-            color: #6C2A8A;
-
-            margin: 0;
-        }
-
-
-        /* =========================
-           TARJETAS INDICADORES
-        ========================= */
-
-        .stat-card {
-            background-color: white;
-
-            border-radius: 12px;
-
-            padding: 20px;
-
-            height: 100%;
-
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-
-            border-left: 5px solid #6C2A8A;
-        }
-
-        .stat-icon {
-            font-size: 30px;
-
-            color: #6C2A8A;
-        }
-
-        .stat-title {
-            color: #777;
-
-            font-size: 14px;
-        }
-
-        .stat-number {
-            font-size: 28px;
-
-            font-weight: bold;
-
-            color: #333;
-        }
-
-
-        /* =========================
-           TARJETAS GENERALES
-        ========================= */
-
-        .dashboard-card {
-            background-color: white;
-
-            border-radius: 12px;
-
-            padding: 20px;
-
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-
-            height: 100%;
-        }
-
-        .dashboard-card h5 {
-            color: #6C2A8A;
-
-            margin-bottom: 20px;
-        }
-
-
-        /* =========================
-           FILTROS
-        ========================= */
-
-        .filter-card {
-            background-color: white;
-
-            padding: 20px;
-
-            border-radius: 12px;
-
-            margin-bottom: 25px;
-
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .filter-card label {
-            font-weight: bold;
-
-            font-size: 14px;
-        }
-
-
-        /* =========================
-           ALERTAS
-        ========================= */
-
-        .alert-item {
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            padding: 12px;
-
-            margin-bottom: 10px;
-
-            border-radius: 8px;
-
-            background-color: #F8F5FA;
-        }
-
-        .alert-danger-custom {
-            border-left: 4px solid #dc3545;
-        }
-
-        .alert-warning-custom {
-            border-left: 4px solid #ffc107;
-        }
-
-        .alert-success-custom {
-            border-left: 4px solid #198754;
-        }
-
-
-        /* =========================
-           TABLAS
-        ========================= */
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-        }
-
-        th {
-            background-color: #6C2A8A !important;
-
-            color: white !important;
-        }
-
-
-        /* =========================
-           BOTONES
-        ========================= */
-
-        .btn-huellitas {
-            background-color: #6C2A8A;
-
-            color: white;
-
-            border: none;
-        }
-
-        .btn-huellitas:hover {
-            background-color: #57216F;
-
-            color: white;
-        }
-
-
-        /* =========================
-           ESTADO PEDIDOS
-        ========================= */
-
-        .estado {
-            padding: 5px 10px;
-
-            border-radius: 15px;
-
-            font-size: 12px;
-
-            font-weight: bold;
-        }
-
-        .estado-pendiente {
-            background-color: #fff3cd;
-
-            color: #856404;
-        }
-
-        .estado-proceso {
-            background-color: #cfe2ff;
-
-            color: #084298;
-        }
-
-        .estado-enviado {
-            background-color: #d1e7dd;
-
-            color: #0f5132;
-        }
-
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 992px) {
-
-            .sidebar {
-                width: 200px;
-            }
-
-        }
-
-        @media (max-width: 768px) {
-
-            .dashboard-container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-            }
-
-            .sidebar button {
-                width: auto;
-
-                margin-right: 5px;
-            }
-
-            .admin-user span {
-                display: none;
-            }
-
-            .main-content {
-                padding: 15px;
-            }
-
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Administrativo - Huellitas Club</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="css/miestilo.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{margin:0;background:#F8F5FA;font-family:Arial,sans-serif}
+.admin-navbar{height:70px;background:#6C2A8A;color:#fff;display:flex;align-items:center;padding:0 25px}
+.admin-logo{display:flex;align-items:center;font-size:24px;font-weight:bold}
+.admin-logo img{width:50px;height:50px;object-fit:contain;margin-right:10px}
+.admin-user{margin-left:auto;display:flex;align-items:center;gap:10px}
+.dashboard-container{display:flex;min-height:calc(100vh - 70px)}
+.sidebar{width:250px;background:#38203F;color:#fff;padding:20px 15px;flex-shrink:0}
+.sidebar h5{margin-bottom:20px;color:#E8C9F5}
+.sidebar button{width:100%;border:none;background:transparent;color:#fff;text-align:left;padding:12px;margin-bottom:5px;border-radius:8px}
+.sidebar button:hover,.sidebar button.active{background:#6C2A8A}
+.sidebar button:focus-visible,.btn:focus-visible{outline:3px solid #E8C9F5;outline-offset:2px}
+.sidebar i{margin-right:10px}
+.sidebar .badge-n{float:right;background:#dc3545;border-radius:10px;padding:1px 8px;font-size:12px}
+.main-content{flex:1;padding:25px;overflow-x:hidden;min-width:0}
+.dashboard-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+.dashboard-title h1{color:#6C2A8A;margin:0}
+.stat-card{background:#fff;border-radius:12px;padding:20px;height:100%;box-shadow:0 3px 12px rgba(0,0,0,.08);border-left:5px solid #6C2A8A}
+.stat-icon{font-size:30px;color:#6C2A8A}
+.stat-title{color:#777;font-size:14px}
+.stat-number{font-size:28px;font-weight:bold;color:#333}
+.dashboard-card,.filter-card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 3px 12px rgba(0,0,0,.08)}
+.dashboard-card{height:100%}
+.filter-card{margin-bottom:25px}
+.filter-card label{font-weight:bold;font-size:14px}
+.dashboard-card h5,.filter-card h5{color:#6C2A8A;margin-bottom:20px}
+.alert-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;margin-bottom:10px;border-radius:8px;background:#F8F5FA}
+.alert-danger-custom{border-left:4px solid #dc3545}
+.alert-warning-custom{border-left:4px solid #ffc107}
+.alert-success-custom{border-left:4px solid #198754}
+.table-container{overflow-x:auto}
+table{width:100%}
+th{background:#6C2A8A!important;color:#fff!important;white-space:nowrap}
+.btn-huellitas{background:#6C2A8A;color:#fff;border:none}
+.btn-huellitas:hover{background:#57216F;color:#fff}
+.estado{padding:5px 10px;border-radius:15px;font-size:12px;font-weight:bold;white-space:nowrap}
+.estado-pendiente{background:#fff3cd;color:#856404}
+.estado-preparacion{background:#cfe2ff;color:#084298}
+.estado-enviado{background:#e2d4f0;color:#4a1d63}
+.estado-entregado{background:#d1e7dd;color:#0f5132}
+.estado-cancelado{background:#f8d7da;color:#842029}
+.seccion{display:none}.seccion.visible{display:block}
+.chart-box{position:relative;height:280px}
+.stock-bajo{color:#b58100;font-weight:bold}.stock-cero{color:#dc3545;font-weight:bold}
+/* modal propio (no depende de bootstrap.js) */
+#modal{position:fixed;inset:0;background:rgba(30,10,40,.55);display:none;align-items:flex-start;justify-content:center;padding:40px 15px;overflow:auto;z-index:2000}
+#modal.abierto{display:flex}
+#modalCaja{background:#fff;border-radius:12px;width:100%;max-width:640px;padding:24px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+#modalCaja h4{color:#6C2A8A;margin:0 0 15px}
+#toast{position:fixed;right:20px;bottom:20px;background:#38203F;color:#fff;padding:14px 20px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.3);z-index:3000;border-left:5px solid #B45FD6}
+@media(max-width:992px){.sidebar{width:200px}}
+@media(max-width:768px){
+ .dashboard-container{flex-direction:column}
+ .sidebar{width:100%;display:flex;flex-wrap:wrap;gap:4px}
+ .sidebar h5{width:100%;margin-bottom:8px}
+ .sidebar button{width:auto;margin:0}
+ .admin-user span{display:none}
+ .main-content{padding:15px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
-
 
 <body>
 
-
-<!-- =====================================================
-     NAVBAR
-===================================================== -->
-
 <nav class="admin-navbar">
-
-    <div class="admin-logo">
-
-        <img src="img/icono.png" alt="Huellitas Club">
-
-        Huellitas Club
-
-    </div>
-
-    <div class="admin-user">
-
-        <i class="bi bi-person-circle fs-3"></i>
-
-        <span>
-            Administrador
-        </span>
-
-        <button
-            class="btn btn-sm btn-light"
-            onclick="cerrarSesion()">
-
-            <i class="bi bi-box-arrow-right"></i>
-
-            Salir
-
-        </button>
-
-    </div>
-
+  <div class="admin-logo"><img src="img/icono.png" alt="Huellitas Club">Huellitas Club</div>
+  <div class="admin-user">
+    <i class="bi bi-person-circle fs-3"></i><span id="nombreAdmin">Administrador</span>
+    <button class="btn btn-sm btn-light" onclick="cerrarSesion()"><i class="bi bi-box-arrow-right"></i> Salir</button>
+  </div>
 </nav>
-
-
 
 <div class="dashboard-container">
 
-
-<!-- =====================================================
-     SIDEBAR
-===================================================== -->
-
 <aside class="sidebar">
-
-    <h5>
-        <i class="bi bi-speedometer2"></i>
-        Dashboard
-    </h5>
-
-
-    <button class="active" onclick="mostrarSeccion('resumen')">
-
-        <i class="bi bi-house"></i>
-
-        Resumen
-
-    </button>
-
-
-    <button onclick="mostrarSeccion('ventas')">
-
-        <i class="bi bi-graph-up"></i>
-
-        Ventas
-
-    </button>
-
-
-    <button onclick="mostrarSeccion('pedidos')">
-
-        <i class="bi bi-box-seam"></i>
-
-        Pedidos
-
-    </button>
-
-
-    <button onclick="mostrarSeccion('productos')">
-
-        <i class="bi bi-bag"></i>
-
-        Productos
-
-    </button>
-
-
-    <button onclick="mostrarSeccion('clientes')">
-
-        <i class="bi bi-people"></i>
-
-        Clientes
-
-    </button>
-
-
-    <button onclick="mostrarSeccion('alertas')">
-
-        <i class="bi bi-bell"></i>
-
-        Alertas
-
-    </button>
-
-
-    <button onclick="mostrarSeccion('reportes')">
-
-        <i class="bi bi-file-earmark-bar-graph"></i>
-
-        Reportes
-
-    </button>
-
-
-    <button onclick="mostrarSeccion('configuracion')">
-
-        <i class="bi bi-gear"></i>
-
-        Configuración
-
-    </button>
-
+  <h5><i class="bi bi-speedometer2"></i>Dashboard</h5>
+  <button data-sec="resumen" class="active" onclick="mostrarSeccion('resumen')"><i class="bi bi-house"></i>Resumen</button>
+  <button data-sec="ventas" onclick="mostrarSeccion('ventas')"><i class="bi bi-graph-up"></i>Ventas</button>
+  <button data-sec="pedidos" onclick="mostrarSeccion('pedidos')"><i class="bi bi-box-seam"></i>Pedidos</button>
+  <button data-sec="productos" onclick="mostrarSeccion('productos')"><i class="bi bi-bag"></i>Productos</button>
+  <button data-sec="clientes" onclick="mostrarSeccion('clientes')"><i class="bi bi-people"></i>Clientes</button>
+  <button data-sec="alertas" onclick="mostrarSeccion('alertas')"><i class="bi bi-bell"></i>Alertas<span class="badge-n" id="badgeAlertas" hidden></span></button>
+  <button data-sec="reportes" onclick="mostrarSeccion('reportes')"><i class="bi bi-file-earmark-bar-graph"></i>Reportes</button>
+  <button data-sec="configuracion" onclick="mostrarSeccion('configuracion')"><i class="bi bi-gear"></i>Configuración</button>
 </aside>
-
-
-
-<!-- =====================================================
-     CONTENIDO PRINCIPAL
-===================================================== -->
 
 <main class="main-content">
 
-
-<!-- TÍTULO -->
-
 <div class="dashboard-title">
-
-    <div>
-
-        <h1>
-            Dashboard Administrativo
-        </h1>
-
-        <p class="text-muted">
-            Resumen general de Huellitas Club
-        </p>
-
-    </div>
-
-
-    <button
-        class="btn btn-huellitas"
-        onclick="actualizarDashboard()">
-
-        <i class="bi bi-arrow-clockwise"></i>
-
-        Actualizar
-
-    </button>
-
+  <div>
+    <h1 id="tituloSeccion">Resumen</h1>
+    <p class="text-muted mb-0">Panel de administración de Huellitas Club</p>
+  </div>
+  <button class="btn btn-huellitas" onclick="actualizarDashboard()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
 </div>
 
-
-
-<!-- =====================================================
-     FILTROS
-===================================================== -->
-
-<div class="filter-card">
-
-    <h5>
-        <i class="bi bi-funnel"></i>
-
-        Filtros de análisis
-    </h5>
-
-
-    <div class="row g-3">
-
-
-        <div class="col-md-3">
-
-            <label>
-                Fecha desde
-            </label>
-
-            <input
-                type="date"
-                class="form-control"
-                id="fechaDesde">
-
-        </div>
-
-
-        <div class="col-md-3">
-
-            <label>
-                Fecha hasta
-            </label>
-
-            <input
-                type="date"
-                class="form-control"
-                id="fechaHasta">
-
-        </div>
-
-
-        <div class="col-md-3">
-
-            <label>
-                Categoría
-            </label>
-
-            <select class="form-select">
-
-                <option>Todas</option>
-
-                <option>Perros</option>
-
-                <option>Gatos</option>
-
-                <option>Aves</option>
-
-                <option>Roedores</option>
-
-                <option>Peces</option>
-
-            </select>
-
-        </div>
-
-
-        <div class="col-md-3">
-
-            <label>
-                Proveedor
-            </label>
-
-            <select class="form-select">
-
-                <option>Todos</option>
-
-                <option>Proveedor 1</option>
-
-                <option>Proveedor 2</option>
-
-                <option>Proveedor 3</option>
-
-            </select>
-
-        </div>
-
-
-        <div class="col-12">
-
-            <button
-                class="btn btn-huellitas"
-                onclick="aplicarFiltros()">
-
-                <i class="bi bi-search"></i>
-
-                Aplicar filtros
-
-            </button>
-
-            <button
-                class="btn btn-outline-secondary"
-                onclick="limpiarFiltros()">
-
-                Limpiar
-
-            </button>
-
-        </div>
-
+<div class="filter-card" id="filtros">
+  <h5><i class="bi bi-funnel"></i> Filtros de análisis</h5>
+  <div class="row g-3">
+    <div class="col-md-3"><label for="fechaDesde">Fecha desde</label><input type="date" class="form-control" id="fechaDesde"></div>
+    <div class="col-md-3"><label for="fechaHasta">Fecha hasta</label><input type="date" class="form-control" id="fechaHasta"></div>
+    <div class="col-md-3"><label for="fAnimal">Animal</label><select class="form-select" id="fAnimal"></select></div>
+    <div class="col-md-3"><label for="fCategoria">Categoría</label><select class="form-select" id="fCategoria"></select></div>
+    <div class="col-12">
+      <button class="btn btn-huellitas" onclick="aplicarFiltros()"><i class="bi bi-search"></i> Aplicar filtros</button>
+      <button class="btn btn-outline-secondary" onclick="limpiarFiltros()">Limpiar</button>
     </div>
-
+  </div>
 </div>
 
+<!-- ============ RESUMEN ============ -->
+<section id="sec-resumen" class="seccion visible">
+  <div class="row g-4 mb-4" id="kpis"></div>
+  <div class="row g-4 mb-4">
+    <div class="col-lg-8"><div class="dashboard-card"><h5>Ventas en el período</h5><div class="chart-box"><canvas id="ventasChart"></canvas></div></div></div>
+    <div class="col-lg-4"><div class="dashboard-card"><h5>Pedidos por estado</h5><div class="chart-box"><canvas id="pedidosChart"></canvas></div></div></div>
+  </div>
+  <div class="row g-4">
+    <div class="col-lg-5"><div class="dashboard-card"><h5>Más vendidos</h5><div id="topProductos"></div></div></div>
+    <div class="col-lg-7"><div class="dashboard-card"><h5>Últimos pedidos</h5><div class="table-container" id="ultimosPedidos"></div></div></div>
+  </div>
+</section>
 
+<!-- ============ VENTAS ============ -->
+<section id="sec-ventas" class="seccion">
+  <div class="row g-4 mb-4">
+    <div class="col-12"><div class="dashboard-card"><h5>Ingresos</h5><div class="chart-box"><canvas id="ingresosChart"></canvas></div></div></div>
+    <div class="col-lg-6"><div class="dashboard-card"><h5>Ventas por categoría</h5><div class="chart-box"><canvas id="categoriasChart"></canvas></div></div></div>
+    <div class="col-lg-6"><div class="dashboard-card"><h5>Ventas por animal</h5><div class="chart-box"><canvas id="animalesChart"></canvas></div></div></div>
+  </div>
+  <div class="dashboard-card"><h5>Detalle por producto</h5><div class="table-container" id="tablaVentas"></div></div>
+</section>
 
-<!-- =====================================================
-     INDICADORES PRINCIPALES
-===================================================== -->
-
-<div class="row g-4 mb-4">
-
-
-    <div class="col-xl-3 col-md-6">
-
-        <div class="stat-card">
-
-            <div class="d-flex justify-content-between">
-
-                <div>
-
-                    <div class="stat-title">
-                        Ventas
-                    </div>
-
-                    <div class="stat-number">
-                        $2.845.900
-                    </div>
-
-                </div>
-
-                <i class="bi bi-cash-coin stat-icon"></i>
-
-            </div>
-
-        </div>
-
+<!-- ============ PEDIDOS ============ -->
+<section id="sec-pedidos" class="seccion">
+  <div class="dashboard-card">
+    <div class="row g-2 mb-3">
+      <div class="col-md-5"><input class="form-control" id="pBuscar" placeholder="Buscar por N° de pedido, cliente o correo" oninput="renderPedidos()"></div>
+      <div class="col-md-3"><select class="form-select" id="pEstado" onchange="renderPedidos()"></select></div>
+      <div class="col-md-4 text-md-end"><span class="text-muted" id="pContador"></span></div>
     </div>
+    <div class="table-container" id="tablaPedidos"></div>
+  </div>
+</section>
 
-
-    <div class="col-xl-3 col-md-6">
-
-        <div class="stat-card">
-
-            <div class="d-flex justify-content-between">
-
-                <div>
-
-                    <div class="stat-title">
-                        Ingresos
-                    </div>
-
-                    <div class="stat-number">
-                        $3.125.400
-                    </div>
-
-                </div>
-
-                <i class="bi bi-bar-chart stat-icon"></i>
-
-            </div>
-
-        </div>
-
+<!-- ============ PRODUCTOS ============ -->
+<section id="sec-productos" class="seccion">
+  <div class="dashboard-card">
+    <div class="row g-2 mb-3">
+      <div class="col-md-6"><input class="form-control" id="prBuscar" placeholder="Buscar producto" oninput="renderProductos()"></div>
+      <div class="col-md-6 text-md-end"><button class="btn btn-huellitas" onclick="abrirProducto()"><i class="bi bi-plus-lg"></i> Nuevo producto</button></div>
     </div>
+    <div class="table-container" id="tablaProductos"></div>
+  </div>
+</section>
 
+<!-- ============ CLIENTES ============ -->
+<section id="sec-clientes" class="seccion">
+  <div class="dashboard-card">
+    <input class="form-control mb-3" id="cBuscar" placeholder="Buscar cliente" oninput="renderClientes()">
+    <div class="table-container" id="tablaClientes"></div>
+  </div>
+</section>
 
-    <div class="col-xl-3 col-md-6">
+<!-- ============ ALERTAS ============ -->
+<section id="sec-alertas" class="seccion">
+  <div class="dashboard-card"><h5>Alertas del sistema</h5><div id="listaAlertas"></div></div>
+</section>
 
-        <div class="stat-card">
-
-            <div class="d-flex justify-content-between">
-
-                <div>
-
-                    <div class="stat-title">
-                        Pedidos
-                    </div>
-
-                    <div class="stat-number">
-                        186
-                    </div>
-
-                </div>
-
-                <i class="bi bi-cart-check stat-icon"></i>
-
-            </div>
-
-        </div>
-
+<!-- ============ REPORTES ============ -->
+<section id="sec-reportes" class="seccion">
+  <div class="dashboard-card">
+    <h5>Exportar datos (respeta los filtros de fecha, animal y categoría)</h5>
+    <div class="d-flex flex-wrap gap-2">
+      <button class="btn btn-huellitas" onclick="exportar('pedidos')"><i class="bi bi-download"></i> Pedidos (CSV)</button>
+      <button class="btn btn-huellitas" onclick="exportar('ventas')"><i class="bi bi-download"></i> Ventas por producto (CSV)</button>
+      <button class="btn btn-huellitas" onclick="exportar('clientes')"><i class="bi bi-download"></i> Clientes (CSV)</button>
+      <button class="btn btn-huellitas" onclick="exportar('inventario')"><i class="bi bi-download"></i> Inventario (CSV)</button>
+      <button class="btn btn-outline-secondary" onclick="window.print()"><i class="bi bi-printer"></i> Imprimir</button>
     </div>
-
-
-    <div class="col-xl-3 col-md-6">
-
-        <div class="stat-card">
-
-            <div class="d-flex justify-content-between">
-
-                <div>
-
-                    <div class="stat-title">
-                        Clientes registrados
-                    </div>
-
-                    <div class="stat-number">
-                        742
-                    </div>
-
-                </div>
-
-                <i class="bi bi-people stat-icon"></i>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     GRÁFICOS
-===================================================== -->
-
-<div class="row g-4 mb-4">
-
-
-    <!-- VENTAS -->
-
-    <div class="col-lg-8">
-
-        <div class="dashboard-card">
-
-            <h5>
-                <i class="bi bi-graph-up"></i>
-
-                Ventas en el período
-            </h5>
-
-            <canvas id="ventasChart"></canvas>
-
-        </div>
-
-    </div>
-
-
-    <!-- ESTADO PEDIDOS -->
-
-    <div class="col-lg-4">
-
-        <div class="dashboard-card">
-
-            <h5>
-                Estado de pedidos
-            </h5>
-
-            <canvas id="pedidosChart"></canvas>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<div class="row g-4 mb-4">
-
-
-    <!-- INGRESOS -->
-
-    <div class="col-lg-6">
-
-        <div class="dashboard-card">
-
-            <h5>
-                <i class="bi bi-cash-stack"></i>
-
-                Ingresos
-            </h5>
-
-            <canvas id="ingresosChart"></canvas>
-
-        </div>
-
-    </div>
-
-
-    <!-- PRODUCTOS POR CATEGORÍA -->
-
-    <div class="col-lg-6">
-
-        <div class="dashboard-card">
-
-            <h5>
-                Distribución de productos por categoría
-            </h5>
-
-            <canvas id="categoriasChart"></canvas>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     PRODUCTOS
-===================================================== -->
-
-<div class="row g-4 mb-4">
-
-
-    <div class="col-lg-6">
-
-        <div class="dashboard-card">
-
-            <h5>
-                Productos más vendidos
-            </h5>
-
-            <div class="table-container">
-
-                <table class="table">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Producto</th>
-
-                            <th>Categoría</th>
-
-                            <th>Vendidos</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-                            <td>Alimento Premium Gatos</td>
-                            <td>Gatos</td>
-                            <td>82</td>
-                        </tr>
-
-                        <tr>
-                            <td>Alimento Premium Perros</td>
-                            <td>Perros</td>
-                            <td>76</td>
-                        </tr>
-
-                        <tr>
-                            <td>Juguete Mordedor</td>
-                            <td>Perros</td>
-                            <td>64</td>
-                        </tr>
-
-                        <tr>
-                            <td>Arena Sanitaria</td>
-                            <td>Gatos</td>
-                            <td>58</td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="col-lg-6">
-
-        <div class="dashboard-card">
-
-            <h5>
-                Productos con baja rotación
-            </h5>
-
-            <div class="table-container">
-
-                <table class="table">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>Producto</th>
-
-                            <th>Stock</th>
-
-                            <th>Ventas</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-                            <td>Casa para aves</td>
-                            <td>24</td>
-                            <td>2</td>
-                        </tr>
-
-                        <tr>
-                            <td>Rueda para hámster</td>
-                            <td>18</td>
-                            <td>3</td>
-                        </tr>
-
-                        <tr>
-                            <td>Fuente de agua</td>
-                            <td>12</td>
-                            <td>2</td>
-                        </tr>
-
-                        <tr>
-                            <td>Juguete para peces</td>
-                            <td>30</td>
-                            <td>1</td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     STOCK
-===================================================== -->
-
-<div class="row g-4 mb-4">
-
-
-    <div class="col-lg-6">
-
-        <div class="dashboard-card">
-
-            <h5>
-                Productos sin stock
-            </h5>
-
-            <div class="alert-item alert-danger-custom">
-
-                <span>
-                    Arena Sanitaria 10 kg
-                </span>
-
-                <strong>
-                    0 unidades
-                </strong>
-
-            </div>
-
-
-            <div class="alert-item alert-danger-custom">
-
-                <span>
-                    Snack Dental Perro
-                </span>
-
-                <strong>
-                    0 unidades
-                </strong>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="col-lg-6">
-
-        <div class="dashboard-card">
-
-            <h5>
-                Productos con stock bajo
-            </h5>
-
-            <div class="alert-item alert-warning-custom">
-
-                <span>
-                    Alimento Premium Gatos
-                </span>
-
-                <strong>
-                    4 unidades
-                </strong>
-
-            </div>
-
-
-            <div class="alert-item alert-warning-custom">
-
-                <span>
-                    Correa para Perro
-                </span>
-
-                <strong>
-                    6 unidades
-                </strong>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     CLIENTES
-===================================================== -->
-
-<div class="row g-4 mb-4">
-
-
-    <div class="col-lg-6">
-
-        <div class="dashboard-card">
-
-            <h5>
-                Clientes con mayor cantidad de compras
-            </h5>
-
-
-            <table class="table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Cliente</th>
-
-                        <th>Compras</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    <tr>
-                        <td>Cliente 001</td>
-                        <td>24</td>
-                    </tr>
-
-                    <tr>
-                        <td>Cliente 002</td>
-                        <td>19</td>
-                    </tr>
-
-                    <tr>
-                        <td>Cliente 003</td>
-                        <td>17</td>
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
-
-
-    <div class="col-lg-6">
-
-        <div class="dashboard-card">
-
-            <h5>
-                Actividad reciente
-            </h5>
-
-            <div class="alert-item alert-success-custom">
-
-                <span>
-                    Nuevo pedido #1058
-                </span>
-
-                <small>
-                    Hace 5 min
-                </small>
-
-            </div>
-
-
-            <div class="alert-item">
-
-                <span>
-                    Cliente registrado
-                </span>
-
-                <small>
-                    Hace 15 min
-                </small>
-
-            </div>
-
-
-            <div class="alert-item">
-
-                <span>
-                    Producto actualizado
-                </span>
-
-                <small>
-                    Hace 30 min
-                </small>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     PEDIDOS
-===================================================== -->
-
-<div class="dashboard-card mb-4">
-
-    <h5>
-        <i class="bi bi-box-seam"></i>
-
-        Pedidos pendientes
-    </h5>
-
-
-    <div class="table-container">
-
-        <table class="table">
-
-            <thead>
-
-                <tr>
-
-                    <th>N° Pedido</th>
-
-                    <th>Cliente</th>
-
-                    <th>Total</th>
-
-                    <th>Fecha</th>
-
-                    <th>Estado</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                <tr>
-
-                    <td>#1058</td>
-
-                    <td>Juan Pérez</td>
-
-                    <td>$45.900</td>
-
-                    <td>19/09/2026</td>
-
-                    <td>
-                        <span class="estado estado-pendiente">
-                            Pendiente
-                        </span>
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>#1057</td>
-
-                    <td>María Soto</td>
-
-                    <td>$32.500</td>
-
-                    <td>19/09/2026</td>
-
-                    <td>
-                        <span class="estado estado-proceso">
-                            En preparación
-                        </span>
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>#1056</td>
-
-                    <td>Pedro González</td>
-
-                    <td>$67.900</td>
-
-                    <td>18/09/2026</td>
-
-                    <td>
-                        <span class="estado estado-enviado">
-                            Enviado
-                        </span>
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     ALERTAS ADMINISTRATIVAS
-===================================================== -->
-
-<div class="dashboard-card mb-4">
-
-    <h5>
-        <i class="bi bi-bell"></i>
-
-        Alertas administrativas
-    </h5>
-
-
-    <div class="alert-item alert-danger-custom">
-
-        <div>
-
-            <strong>
-                Stock agotado
-            </strong>
-
-            <br>
-
-            <small>
-                2 productos requieren reposición.
-            </small>
-
-        </div>
-
-        <button
-            class="btn btn-sm btn-danger"
-            onclick="marcarAtendida(this)">
-
-            Atender
-
-        </button>
-
-    </div>
-
-
-    <div class="alert-item alert-warning-custom">
-
-        <div>
-
-            <strong>
-                Stock bajo
-            </strong>
-
-            <br>
-
-            <small>
-                5 productos tienen menos de 10 unidades.
-            </small>
-
-        </div>
-
-        <button
-            class="btn btn-sm btn-warning"
-            onclick="marcarAtendida(this)">
-
-            Atender
-
-        </button>
-
-    </div>
-
-
-    <div class="alert-item alert-warning-custom">
-
-        <div>
-
-            <strong>
-                Pedidos pendientes
-            </strong>
-
-            <br>
-
-            <small>
-                Existen 8 pedidos esperando procesamiento.
-            </small>
-
-        </div>
-
-        <button
-            class="btn btn-sm btn-warning"
-            onclick="marcarAtendida(this)">
-
-            Atender
-
-        </button>
-
-    </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     REPORTES
-===================================================== -->
-
-<div class="dashboard-card mb-4">
-
-    <h5>
-        <i class="bi bi-file-earmark-bar-graph"></i>
-
-        Generar reportes
-    </h5>
-
-
-    <div class="row g-3">
-
-        <div class="col-md-4">
-
-            <button
-                class="btn btn-huellitas w-100"
-                onclick="generarReporte('ventas')">
-
-                <i class="bi bi-cash"></i>
-
-                Reporte de ventas
-
-            </button>
-
-        </div>
-
-
-        <div class="col-md-4">
-
-            <button
-                class="btn btn-huellitas w-100"
-                onclick="generarReporte('inventario')">
-
-                <i class="bi bi-box"></i>
-
-                Reporte de inventario
-
-            </button>
-
-        </div>
-
-
-        <div class="col-md-4">
-
-            <button
-                class="btn btn-huellitas w-100"
-                onclick="generarReporte('pedidos')">
-
-                <i class="bi bi-cart"></i>
-
-                Reporte de pedidos
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- =====================================================
-     CONFIGURACIÓN
-===================================================== -->
-
-<div class="dashboard-card mb-4">
-
-    <h5>
-        <i class="bi bi-gear"></i>
-
-        Configuración del Dashboard
-    </h5>
-
-
-    <div class="row g-3">
-
-
-        <div class="col-md-6">
-
-            <label class="form-label">
-                Período predeterminado
-            </label>
-
-            <select class="form-select">
-
-                <option>Últimos 7 días</option>
-
-                <option selected>
-                    Últimos 30 días
-                </option>
-
-                <option>Últimos 3 meses</option>
-
-                <option>Último año</option>
-
-            </select>
-
-        </div>
-
-
-        <div class="col-md-6">
-
-            <label class="form-label">
-                Indicadores visibles
-            </label>
-
-            <select class="form-select">
-
-                <option>
-                    Todos los indicadores
-                </option>
-
-                <option>
-                    Solo ventas
-                </option>
-
-                <option>
-                    Solo inventario
-                </option>
-
-                <option>
-                    Solo pedidos
-                </option>
-
-            </select>
-
-        </div>
-
-
-        <div class="col-12">
-
-            <button
-                class="btn btn-huellitas"
-                onclick="guardarConfiguracion()">
-
-                Guardar configuración
-
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
+  </div>
+</section>
+
+<!-- ============ CONFIGURACIÓN ============ -->
+<section id="sec-configuracion" class="seccion">
+  <div class="row g-4">
+    <div class="col-lg-6"><div class="dashboard-card">
+      <h5>Inventario</h5>
+      <label for="cfgUmbral" class="fw-bold">Umbral de stock bajo (unidades)</label>
+      <div class="input-group mb-3"><input type="number" min="1" class="form-control" id="cfgUmbral"><button class="btn btn-huellitas" onclick="guardarUmbral()">Guardar</button></div>
+      <button class="btn btn-outline-danger" onclick="restaurarProductos()">Restaurar catálogo original</button>
+    </div></div>
+    <div class="col-lg-6"><div class="dashboard-card">
+      <h5>Pedidos ficticios</h5>
+      <label for="cfgCantidad" class="fw-bold">Cantidad de pedidos a generar</label>
+      <div class="input-group"><input type="number" min="10" max="500" value="80" class="form-control" id="cfgCantidad"><button class="btn btn-huellitas" onclick="regenerar()">Regenerar</button></div>
+      <small class="text-muted">Reemplaza los pedidos actuales, incluidos los cambios de estado.</small>
+    </div></div>
+  </div>
+</section>
 
 </main>
-
 </div>
 
+<div id="modal" onclick="if(event.target===this)cerrarModal()"><div id="modalCaja" role="dialog" aria-modal="true"><h4 id="modalTitulo"></h4><div id="modalCuerpo"></div></div></div>
 
+<div id="toast" role="status" hidden></div>
 
-<script>
-
-/* =====================================================
-   GRÁFICO DE VENTAS
-===================================================== */
-
-new Chart(
-    document.getElementById("ventasChart"),
-    {
-        type: "bar",
-
-        data: {
-
-            labels: [
-                "Lun",
-                "Mar",
-                "Mié",
-                "Jue",
-                "Vie",
-                "Sáb",
-                "Dom"
-            ],
-
-            datasets: [
-
-                {
-                    label: "Ventas",
-
-                    data: [
-                        320000,
-                        410000,
-                        280000,
-                        520000,
-                        470000,
-                        620000,
-                        380000
-                    ]
-                }
-
-            ]
-
-        },
-
-        options: {
-            responsive: true
-        }
-
-    }
-);
-
-
-/* =====================================================
-   PEDIDOS
-===================================================== */
-
-new Chart(
-    document.getElementById("pedidosChart"),
-    {
-        type: "doughnut",
-
-        data: {
-
-            labels: [
-                "Pendientes",
-                "En preparación",
-                "Enviados"
-            ],
-
-            datasets: [
-
-                {
-                    data: [
-                        8,
-                        12,
-                        24
-                    ]
-                }
-
-            ]
-
-        },
-
-        options: {
-            responsive: true
-        }
-
-    }
-);
-
-
-/* =====================================================
-   INGRESOS
-===================================================== */
-
-new Chart(
-    document.getElementById("ingresosChart"),
-    {
-        type: "line",
-
-        data: {
-
-            labels: [
-                "Enero",
-                "Febrero",
-                "Marzo",
-                "Abril",
-                "Mayo",
-                "Junio"
-            ],
-
-            datasets: [
-
-                {
-                    label: "Ingresos",
-
-                    data: [
-                        1800000,
-                        2100000,
-                        1950000,
-                        2500000,
-                        2900000,
-                        3125400
-                    ],
-
-                    tension: 0.3
-                }
-
-            ]
-
-        },
-
-        options: {
-            responsive: true
-        }
-
-    }
-);
-
-
-/* =====================================================
-   CATEGORÍAS
-===================================================== */
-
-new Chart(
-    document.getElementById("categoriasChart"),
-    {
-        type: "pie",
-
-        data: {
-
-            labels: [
-                "Perros",
-                "Gatos",
-                "Aves",
-                "Roedores",
-                "Peces"
-            ],
-
-            datasets: [
-
-                {
-                    data: [
-                        40,
-                        30,
-                        10,
-                        12,
-                        8
-                    ]
-                }
-
-            ]
-
-        },
-
-        options: {
-            responsive: true
-        }
-
-    }
-);
-
-
-/* =====================================================
-   ACTUALIZAR DASHBOARD
-===================================================== */
-
-function actualizarDashboard() {
-
-    alert(
-        "Dashboard actualizado correctamente."
-    );
-
-}
-
-
-/* =====================================================
-   FILTROS
-===================================================== */
-
-function aplicarFiltros() {
-
-    alert(
-        "Filtros aplicados correctamente."
-    );
-
-}
-
-
-function limpiarFiltros() {
-
-    document.getElementById("fechaDesde").value = "";
-
-    document.getElementById("fechaHasta").value = "";
-
-}
-
-
-/* =====================================================
-   ALERTA ATENDIDA
-===================================================== */
-
-function marcarAtendida(boton) {
-
-    const alerta = boton.parentElement;
-
-    alerta.style.opacity = "0.5";
-
-    boton.disabled = true;
-
-    boton.textContent = "Atendida";
-
-}
-
-
-/* =====================================================
-   REPORTES
-===================================================== */
-
-function generarReporte(tipo) {
-
-    alert(
-        "Generando reporte de " + tipo + "..."
-    );
-
-}
-
-
-/* =====================================================
-   CONFIGURACIÓN
-===================================================== */
-
-function guardarConfiguracion() {
-
-    alert(
-        "Configuración guardada correctamente."
-    );
-
-}
-
-
-/* =====================================================
-   CAMBIO DE SECCIÓN
-===================================================== */
-
-function mostrarSeccion(seccion) {
-
-    alert(
-        "Sección seleccionada: " + seccion
-    );
-
-}
-
-
-/* =====================================================
-   CERRAR SESIÓN
-===================================================== */
-
-function cerrarSesion() {
-
-    localStorage.removeItem("sesionActiva");
-
-    window.location.href = "login.html";
-
-}
-
-</script>
-
-
+<script src="JS/productos.js"></script>
+<script src="JS/pedidos.js"></script>
+<script src="JS/dashboard_admin.js"></script>
 </body>
-
 </html>

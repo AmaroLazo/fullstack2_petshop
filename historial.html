@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo | Huellitas Club</title>
+    <title>Historial de compras | Huellitas Club</title>
+    <script>
+        // Si no hay sesión iniciada, no se puede ver esta página
+        if (localStorage.getItem('sesionActiva') !== 'true') {
+            window.location.href = 'login.html';
+        }
+    </script>
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="css/miestilo.css">
@@ -176,210 +182,18 @@
     </div>
 </nav>
 
+<!-- ================= HISTORIAL DE COMPRAS ================= -->
 
-<!-- Encabezado del catálogo -->
-<main class="main-content">
+<main class="cuenta-container">
 
-    <section class="hero-banner">
-        <div class="banner-card">
-            <h1>Catálogo de productos</h1>
-            <p>Encuentra todo lo que tu mascota necesita.</p>
-        </div>
-    </section>
+    <h1 class="text-center mb-4"><i class="bi bi-clock-history"></i> Historial de compras</h1>
+
+    <div id="historialLista" class="historial-lista"></div>
 
 </main>
 
 
-<!-- Catálogo -->
-<section class="productos-recomendados">
-
-    <h2 id="tituloCatalogo">Todos los productos</h2>
-
-    <!-- Filtros -->
-    <div class="catalogo-filtros">
-        <div class="row g-3 align-items-end">
-
-            <div class="col-12 col-md-6 col-lg-3">
-                <label for="filtroTexto" class="form-label">Buscar</label>
-                <input type="search" id="filtroTexto" class="form-control" placeholder="Ej: snack, collar...">
-            </div>
-
-            <div class="col-6 col-md-3 col-lg-2">
-                <label for="filtroAnimal" class="form-label">Animal</label>
-                <select id="filtroAnimal" class="form-select">
-                    <option value="">Todos</option>
-                    <option value="perros">Perros</option>
-                    <option value="gatos">Gatos</option>
-                    <option value="aves">Aves</option>
-                    <option value="roedores">Roedores</option>
-                    <option value="peces">Peces</option>
-                    <option value="reptiles">Reptiles</option>
-                </select>
-            </div>
-
-            <div class="col-6 col-md-3 col-lg-3">
-                <label for="filtroCategoria" class="form-label">Categoría</label>
-                <select id="filtroCategoria" class="form-select">
-                    <option value="">Todas</option>
-                    <option value="alimentos">Alimentos</option>
-                    <option value="snacks">Snacks y premios</option>
-                    <option value="juguetes">Juguetes</option>
-                    <option value="accesorios">Accesorios</option>
-                    <option value="higiene">Higiene y cuidado</option>
-                    <option value="camas">Camas y descanso</option>
-                </select>
-            </div>
-
-            <div class="col-8 col-md-6 col-lg-3">
-                <label for="ordenar" class="form-label">Ordenar por</label>
-                <select id="ordenar" class="form-select">
-                    <option value="original">Recomendados</option>
-                    <option value="precio-asc">Precio: menor a mayor</option>
-                    <option value="precio-desc">Precio: mayor a menor</option>
-                    <option value="nombre">Nombre (A-Z)</option>
-                </select>
-            </div>
-
-            <div class="col-4 col-md-6 col-lg-1 d-grid">
-                <button type="button" id="limpiarFiltros" class="btn" title="Limpiar filtros">
-                    <i class="bi bi-x-circle"></i>
-                </button>
-            </div>
-
-        </div>
-    </div>
-
-    <p id="contador" class="catalogo-contador"></p>
-
-    <!-- Productos -->
-    <div class="productos-grid" id="productosGrid">
-
-        <div class="producto" data-animal="perros" data-categoria="alimentos" data-precio="12990">
-            <img src="img/prueba1.png" alt="Alimento para perros">
-            <h3><a href="producto.html?id=1" class="stretched-link text-reset text-decoration-none">Alimento para perros</a></h3>
-            <p>Alimento nutritivo para perros adultos.</p>
-            <span>$12.990</span>
-        </div>
-
-        <div class="producto" data-animal="gatos" data-categoria="alimentos" data-precio="10990">
-            <img src="img/prueba1.png" alt="Alimento para gatos">
-            <h3><a href="producto.html?id=2" class="stretched-link text-reset text-decoration-none">Alimento para gatos</a></h3>
-            <p>Alimento completo y equilibrado para gatos.</p>
-            <span>$10.990</span>
-        </div>
-
-        <div class="producto" data-animal="perros" data-categoria="juguetes" data-precio="7990">
-            <img src="img/prueba1.png" alt="Juguete para perros">
-            <h3><a href="producto.html?id=3" class="stretched-link text-reset text-decoration-none">Juguete para perros</a></h3>
-            <p>Juguete resistente para entretener a tu mascota.</p>
-            <span>$7.990</span>
-        </div>
-
-        <div class="producto" data-animal="gatos" data-categoria="juguetes" data-precio="5990">
-            <img src="img/prueba1.png" alt="Juguete para gatos">
-            <h3><a href="producto.html?id=4" class="stretched-link text-reset text-decoration-none">Juguete para gatos</a></h3>
-            <p>Juguete interactivo para gatos.</p>
-            <span>$5.990</span>
-        </div>
-
-        <div class="producto" data-animal="perros" data-categoria="accesorios" data-precio="6990">
-            <img src="img/prueba1.png" alt="Collar para perro">
-            <h3><a href="producto.html?id=5" class="stretched-link text-reset text-decoration-none">Collar para perro</a></h3>
-            <p>Collar cómodo y ajustable.</p>
-            <span>$6.990</span>
-        </div>
-
-        <div class="producto" data-animal="perros" data-categoria="accesorios" data-precio="8990">
-            <img src="img/prueba1.png" alt="Correa para perro">
-            <h3><a href="producto.html?id=6" class="stretched-link text-reset text-decoration-none">Correa para perro</a></h3>
-            <p>Correa resistente para paseos.</p>
-            <span>$8.990</span>
-        </div>
-
-        <div class="producto" data-animal="perros gatos" data-categoria="camas" data-precio="19990">
-            <img src="img/prueba1.png" alt="Cama para mascotas">
-            <h3><a href="producto.html?id=7" class="stretched-link text-reset text-decoration-none">Cama para mascotas</a></h3>
-            <p>Cama cómoda para el descanso de tu mascota.</p>
-            <span>$19.990</span>
-        </div>
-
-        <div class="producto" data-animal="perros gatos" data-categoria="accesorios" data-precio="4990">
-            <img src="img/prueba1.png" alt="Plato para mascotas">
-            <h3><a href="producto.html?id=8" class="stretched-link text-reset text-decoration-none">Plato para mascotas</a></h3>
-            <p>Plato práctico para comida y agua.</p>
-            <span>$4.990</span>
-        </div>
-
-        <div class="producto" data-animal="perros" data-categoria="snacks" data-precio="3990">
-            <img src="img/prueba1.png" alt="Snack para perros">
-            <h3><a href="producto.html?id=9" class="stretched-link text-reset text-decoration-none">Snack para perros</a></h3>
-            <p>Premios ideales para consentir a tu mascota.</p>
-            <span>$3.990</span>
-        </div>
-
-        <div class="producto" data-animal="gatos" data-categoria="snacks" data-precio="3490">
-            <img src="img/prueba1.png" alt="Snack para gatos">
-            <h3><a href="producto.html?id=10" class="stretched-link text-reset text-decoration-none">Snack para gatos</a></h3>
-            <p>Deliciosos premios para gatos.</p>
-            <span>$3.490</span>
-        </div>
-
-        <div class="producto" data-animal="perros gatos" data-categoria="higiene" data-precio="7490">
-            <img src="img/prueba1.png" alt="Shampoo para mascotas">
-            <h3><a href="producto.html?id=11" class="stretched-link text-reset text-decoration-none">Shampoo para mascotas</a></h3>
-            <p>Shampoo suave para el cuidado del pelaje.</p>
-            <span>$7.490</span>
-        </div>
-
-        <div class="producto" data-animal="perros gatos" data-categoria="higiene" data-precio="5490">
-            <img src="img/prueba1.png" alt="Cepillo para mascotas">
-            <h3><a href="producto.html?id=12" class="stretched-link text-reset text-decoration-none">Cepillo para mascotas</a></h3>
-            <p>Ayuda a mantener el pelaje limpio y saludable.</p>
-            <span>$5.490</span>
-        </div>
-
-        <div class="producto" data-animal="gatos" data-categoria="camas" data-precio="24990">
-            <img src="img/prueba1.png" alt="Casa para gatos">
-            <h3><a href="producto.html?id=13" class="stretched-link text-reset text-decoration-none">Casa para gatos</a></h3>
-            <p>Espacio cómodo para que tu gato descanse.</p>
-            <span>$24.990</span>
-        </div>
-
-        <div class="producto" data-animal="perros" data-categoria="juguetes" data-precio="4990">
-            <img src="img/prueba1.png" alt="Pelota para perros">
-            <h3><a href="producto.html?id=14" class="stretched-link text-reset text-decoration-none">Pelota para perros</a></h3>
-            <p>Pelota resistente para jugar.</p>
-            <span>$4.990</span>
-        </div>
-
-        <div class="producto" data-animal="gatos" data-categoria="higiene" data-precio="9990">
-            <img src="img/prueba1.png" alt="Arena para gatos">
-            <h3><a href="producto.html?id=15" class="stretched-link text-reset text-decoration-none">Arena para gatos</a></h3>
-            <p>Arena absorbente para mantener limpio su espacio.</p>
-            <span>$9.990</span>
-        </div>
-
-        <div class="producto" data-animal="perros gatos" data-categoria="accesorios" data-precio="29990">
-            <img src="img/prueba1.png" alt="Transportadora">
-            <h3><a href="producto.html?id=16" class="stretched-link text-reset text-decoration-none">Transportadora</a></h3>
-            <p>Transportadora segura y cómoda para mascotas.</p>
-            <span>$29.990</span>
-        </div>
-
-    </div>
-
-    <!-- Mensaje cuando no hay resultados -->
-    <div id="sinResultados" class="catalogo-sin-resultados" hidden>
-        <i class="bi bi-emoji-frown fs-1"></i>
-        <p class="mt-2">No encontramos productos con esos filtros.</p>
-        <button type="button" id="limpiarFiltros2" class="btn">Ver todos los productos</button>
-    </div>
-
-</section>
-
-
-    <!-- Footer Basado en el que hizo el profe-->
-    <footer class="text-light pt-5 pb-3" style="background-color: #6C2A8A; font-family:'Terraria';">
+    <footer class="text-d pt-5 pb-3" style="background-color: #6C2A8A; font-family:'Terraria';">
         <div class="container">
             <div class="row g-4">
 
@@ -487,10 +301,7 @@
     </footer>
 
     <script src="js/bootstrap.bundle.min.js"></script>
-
-    <!-- Filtros del catálogo y catálogo -->
-    <script src="js/catalogo.js"></script>
+    <script src="js/historial.js"></script>
     <script src="js/navbar.js"></script>
-    <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
