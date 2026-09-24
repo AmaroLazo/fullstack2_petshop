@@ -16,6 +16,24 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    // ==========================================
+    // BUSCADOR DEL NAVBAR
+    // ==========================================
+    // Sin importar en qué página estemos, al buscar
+    // siempre mandamos a catalogo.html?q=...
+    const inputBusqueda = document.getElementById("busquedaNavbar");
+    const formBusqueda = inputBusqueda ? inputBusqueda.closest("form") : null;
+
+    if (formBusqueda) {
+        formBusqueda.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const texto = inputBusqueda.value.trim();
+            const url = new URL("catalogo.html", window.location.href);
+            if (texto) url.searchParams.set("q", texto);
+            window.location.href = url.toString();
+        });
+    }
+
     const botonUsuario = document.getElementById("botonUsuario");
     const textoUsuario = document.getElementById("textoUsuario");
     const menuUsuario = document.getElementById("menuUsuario");

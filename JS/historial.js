@@ -2,13 +2,21 @@
    HISTORIAL DE COMPRAS
    ---------------------------------------------------------
    Lee la lista de pedidos que pagos.js va guardando en
-   localStorage bajo la llave "historialCompras" cada vez que
-   una compra se completa. Formato de cada pedido:
-       { numero, fecha, items: [{nombre, cantidad, precio}], total }
+   localStorage. Cada usuario tiene su propia llave, armada con
+   su correo (guardado en "correoUsuario" al iniciar sesión), así
+   que un usuario nunca ve el historial de otro.
+       llave: "historialCompras_" + correoUsuario
+   Formato de cada pedido:
+       { numero, fecha, items: [{nombre, cantidad, precio}], total, direccion }
    ========================================================= */
 
 function formatoPrecio(n) {
     return '$' + n.toLocaleString('es-CL');
+}
+
+function llaveHistorial() {
+    const correo = localStorage.getItem('correoUsuario') || 'invitado';
+    return 'historialCompras_' + correo;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -17,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let pedidos = [];
 
     try {
-        pedidos = JSON.parse(localStorage.getItem('historialCompras')) || [];
+        pedidos = JSON.parse(localStorage.getItem(llaveHistorial())) || [];
     } catch {
         pedidos = [];
     }
@@ -47,6 +55,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span>${formatoPrecio(item.precio * item.cantidad)}</span>
                     </div>`).join('')}
             </div>
+            ${pedido.direccion ? `
+            <div class="historial-pedido-direccion ">
+                <i class="bi bi-geo-alt"></i>
+                Enviado a: ${pedido.direccion.calle}${pedido.direccion.referencia ? ' (' + pedido.direccion.referencia + ')' : ''}
+            </div>` : ''}
             <div class="historial-pedido-total">
                 <span>Total</span>
                 <strong>${formatoPrecio(pedido.total)}</strong>

@@ -203,6 +203,29 @@
 
         <hr class="my-4">
 
+        <div id="bloqueDatos">
+            <h2 class="h5 mb-3">Datos de contacto</h2>
+
+            <form id="formDatos">
+                <div class="campo">
+                    <label for="cuentaTelefono">Teléfono</label>
+                    <input type="tel" id="cuentaTelefono">
+                </div>
+                <div class="campo">
+                    <label for="cuentaDireccionCalle">Dirección (calle y número)</label>
+                    <input type="text" id="cuentaDireccionCalle">
+                </div>
+                <div class="campo">
+                    <label for="cuentaDireccionReferencia">Departamento, condominio, referencia (opcional)</label>
+                    <input type="text" id="cuentaDireccionReferencia">
+                </div>
+                <p id="datosMensaje" class="mensaje-error"></p>
+                <button type="submit" class="btn-login">Guardar datos</button>
+            </form>
+        </div>
+
+        <hr class="my-4">
+
         <div id="bloqueContrasena">
             <h2 class="h5 mb-3">Cambiar contraseña</h2>
 
