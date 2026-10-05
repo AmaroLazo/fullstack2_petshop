@@ -6,9 +6,9 @@
 const PRODUCTOS = [
 
     /* ---------- Perros y gatos ---------- */
-    { id: 1,  nombre: "Alimento para perros",  precio: 12990, animal: ["perros"],           categoria: "alimentos",  imagen: "img/prueba1.png",
+    { id: 1,  nombre: "Alimento para perros",  precio: 12990, animal: ["perros"],           categoria: "alimentos",  imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcU2abEgCILJie9S9dI9y7CTURMJOP-ymHRCqfWPknNg&s=10",
       descripcion: "Alimento nutritivo para perros adultos, con proteínas de calidad, vitaminas y minerales para mantener su energía y un pelaje brillante." },
-    { id: 2,  nombre: "Alimento para gatos",   precio: 10990, animal: ["gatos"],            categoria: "alimentos",  imagen: "img/prueba1.png",
+    { id: 2,  nombre: "Alimento para gatos",   precio: 10990, animal: ["gatos"],            categoria: "alimentos",  imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoWFFJqYckNDX3r8YHMf_yO6x5GiR3-ntQhLcqMZmfOQ&s=10",
       descripcion: "Alimento completo y equilibrado para gatos, ayuda a cuidar su salud digestiva y a mantener un peso saludable." },
     { id: 3,  nombre: "Juguete para perros",   precio: 7990,  animal: ["perros"],           categoria: "juguetes",   imagen: "img/prueba1.png",
       descripcion: "Juguete resistente para entretener a tu mascota, ideal para morder, jugar y liberar energía." },
@@ -40,7 +40,7 @@ const PRODUCTOS = [
       descripcion: "Transportadora segura y ventilada, ideal para viajes y visitas al veterinario." },
 
     /* ---------- Aves ---------- */
-    { id: 17, nombre: "Alimento para aves",        precio: 6990,  animal: ["aves"], categoria: "alimentos",  imagen: "img/prueba1.png",
+    { id: 17, nombre: "Alimento para aves",        precio: 6990,  animal: ["aves"], categoria: "alimentos",  imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5cJEzFJrqiH2OdTi7Xhird06Tm5UyOgELzHu3mmFqXg&s=10",
       descripcion: "Mezcla de semillas seleccionadas para canarios, periquitos y otras aves pequeñas." },
     { id: 18, nombre: "Barra de semillas",         precio: 2990,  animal: ["aves"], categoria: "snacks",     imagen: "img/prueba1.png",
       descripcion: "Barra de semillas y miel que sirve de premio y entretiene a tu ave mientras la picotea." },
@@ -50,7 +50,7 @@ const PRODUCTOS = [
       descripcion: "Columpio de madera natural que ayuda a que tu ave se ejercite y se divierta." },
 
     /* ---------- Roedores ---------- */
-    { id: 21, nombre: "Alimento para conejos",     precio: 8990,  animal: ["roedores"], categoria: "alimentos",  imagen: "img/prueba1.png",
+    { id: 21, nombre: "Alimento para conejos",     precio: 8990,  animal: ["roedores"], categoria: "alimentos",  imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqBKPuHbo5UGIa20cZZ56RhM_Q3tnOnzOoagfiiW43VA&s=10",
       descripcion: "Alimento en pellets con fibra para conejos, favorece una buena digestión y dientes sanos." },
     { id: 22, nombre: "Rueda para hámster",        precio: 6490,  animal: ["roedores"], categoria: "juguetes",   imagen: "img/prueba1.png",
       descripcion: "Rueda silenciosa y segura para que tu hámster corra y gaste energía todos los días." },
@@ -60,7 +60,7 @@ const PRODUCTOS = [
       descripcion: "Refugio de madera donde tu mascota puede descansar y esconderse tranquila." },
 
     /* ---------- Peces ---------- */
-    { id: 25, nombre: "Alimento para peces",       precio: 3490,  animal: ["peces"], categoria: "alimentos",  imagen: "img/prueba1.png",
+    { id: 25, nombre: "Alimento para peces",       precio: 3490,  animal: ["peces"], categoria: "alimentos",  imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRcGt5lBrRG-7hTQPGAoAjoTbvuCXQAYUP1ea900qs4Ag&s=10",
       descripcion: "Hojuelas nutritivas para peces de agua dulce, con vitaminas para realzar sus colores." },
     { id: 26, nombre: "Pecera 20 litros",          precio: 39990, animal: ["peces"], categoria: "accesorios", imagen: "img/prueba1.png",
       descripcion: "Pecera de vidrio de 20 litros, ideal para comenzar tu propio acuario en casa." },
@@ -70,7 +70,7 @@ const PRODUCTOS = [
       descripcion: "Elimina el cloro del agua de la llave y la deja segura para tus peces." },
 
     /* ---------- Reptiles ---------- */
-    { id: 29, nombre: "Alimento para reptiles",    precio: 5990,  animal: ["reptiles"], categoria: "alimentos",  imagen: "img/prueba1.png",
+    { id: 29, nombre: "Alimento para reptiles",    precio: 5990,  animal: ["reptiles"], categoria: "alimentos",  imagen: "https://amigales.cl/cdn/shop/files/mazuri_aquatic_turtle_1.webp?v=1786639793&width=600",
       descripcion: "Alimento balanceado para tortugas y otros reptiles, con calcio y vitaminas esenciales." },
     { id: 30, nombre: "Lámpara UVB",               precio: 19990, animal: ["reptiles"], categoria: "accesorios", imagen: "img/prueba1.png",
       descripcion: "Lámpara que entrega luz UVB y calor, necesaria para la salud de tu reptil." },
