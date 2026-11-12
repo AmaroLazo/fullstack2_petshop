@@ -49,7 +49,7 @@ export const UsuarioLayout = () => {
                     <div className="hc-header-inner">
                         <Link to="/" className="hc-brand" aria-label="Huellitas Club, inicio">
                             <img
-                                src="https://raw.githubusercontent.com/AmaroLazo/fullstack2_petshop/master/img/icono.png"
+                                src="https://github.com/AmaroLazo/fullstack2_petshop/blob/hileok/img/icono.png?raw=true"
                                 alt=""
                                 className="hc-brand-logo"
                             />
