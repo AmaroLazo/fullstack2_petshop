@@ -1,75 +1,125 @@
-# React + TypeScript + Vite
+# 🐾 PetShop Huellitas – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Descripción
 
-Currently, two official plugins are available:
+Frontend de **PetShop Huellitas**, una tienda web de productos para mascotas desarrollada con React y TypeScript.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+La aplicación permite consultar productos, registrarse, iniciar sesión, administrar un carrito de compras, realizar pedidos y acceder a un panel de administración.
 
-## React Compiler
+Se conecta a microservicios desarrollados con Spring Boot mediante un API Gateway.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologías utilizadas
 
-## Expanding the ESLint configuration
+- **React:** construcción de interfaces y componentes.
+- **TypeScript:** tipado de datos y funciones.
+- **Vite:** entorno de desarrollo.
+- **React Router:** navegación entre páginas.
+- **Tailwind CSS y shadcn/ui:** estilos y componentes visuales.
+- **Lucide React:** iconos.
+- **Fetch API:** peticiones HTTP hacia el backend.
+- **React Hooks:** manejo de estados y lógica.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Estructura del proyecto
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```text
+src/
+├── components/   # Componentes reutilizables y shadcn/ui
+├── hooks/        # Hooks personalizados
+├── layouts/      # Estructuras de las páginas
+├── pages/        # Vistas de usuarios, autenticación y administración
+├── router/       # Configuración de rutas
+├── services/     # Comunicación con los microservicios
+├── lib/          # Funciones auxiliares
+└── index.css     # Estilos generales
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+## Instalación
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+**1. Clonar el repositorio**
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+git clone URL_DEL_REPOSITORIO
+cd petshop
 ```
+
+**2. Instalar dependencias**
+
+```bash
+npm install
+```
+
+**3. Configurar el archivo `.env`**
+
+```env
+VITE_API_URL=http://localhost:8080
+```
+
+**4. Iniciar el frontend**
+
+```bash
+npm run dev
+```
+
+La aplicación estará disponible en:
+
+`http://localhost:5173`
+
+Es necesario tener funcionando el API Gateway y los microservicios para cargar y guardar datos.
+
+## Funcionalidades
+
+### Clientes
+- Registro e inicio de sesión.
+- Catálogo con búsqueda y categorías.
+- Detalle de productos.
+- Carrito de compras.
+- Proceso de compra y pagos de prueba.
+- Perfil, direcciones e historial de compras.
+
+### Administradores
+- Dashboard con estadísticas.
+- Gestión de productos y stock.
+- Gestión de categorías.
+- Consulta de usuarios y pedidos.
+- Reportes de ventas y productos.
+
+## Arquitectura
+
+```text
+React + TypeScript
+        |
+        v
+Services (Fetch API)
+        |
+        v
+API Gateway (8080)
+        |
+        +-- Usuarios (8090)
+        +-- Catálogo (8082)
+        +-- Pedidos (8084)
+        +-- Pagos (8091)
+        |
+        v
+       MySQL
+```
+
+## Hooks y promesas
+
+El proyecto utiliza `useState`, `useEffect`, `useCallback` y hooks personalizados para manejar información, formularios y estados de carga.
+
+Las peticiones al backend se realizan mediante promesas con `async/await` y manejo de errores con `try/catch/finally`.
+
+Se sigue la organización:
+
+**Pages → Hooks → Services → API Gateway → Microservicios**
+
+## Consideraciones
+
+- El backend debe estar funcionando para utilizar las funcionalidades conectadas a MySQL.
+- El procesamiento de pagos utiliza una pasarela de prueba.
+- La autenticación y autorización del backend requieren mejoras antes de utilizar el sistema en producción.
+- El proyecto está desarrollado con fines académicos.
+
+## Equipo de desarrollo
+
+Proyecto académico **PetShop Huellitas**.
