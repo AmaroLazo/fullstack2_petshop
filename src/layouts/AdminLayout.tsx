@@ -35,7 +35,7 @@ export const AdminLayout = () => {
         <div className="hc-admin-shell">
             <header className="hc-admin-topbar">
                 <Link to="/admin" className="hc-admin-brand">
-                    <img src="https://raw.githubusercontent.com/AmaroLazo/fullstack2_petshop/master/img/icono.png" alt="" />
+                    <img src="https://github.com/AmaroLazo/fullstack2_petshop/blob/hileok/img/icono.png?raw=true" alt="" />
                     <span>Huellitas <strong>Club</strong></span>
                     <small>ADMIN</small>
                 </Link>
