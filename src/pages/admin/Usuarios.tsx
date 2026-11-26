@@ -61,7 +61,7 @@ export const Usuarios = () => {
       setForm({ name: actualizado.name, email: actualizado.email, phone: actualizado.phone ?? '', role: actualizado.role, active: actualizado.active })
       setMensaje('Usuario actualizado correctamente en MySQL.')
       recargar()
-    } catch { /* El hook muestra el error. */ }
+    } catch { void recargar() }
   }
 
   const agregar = async () => {

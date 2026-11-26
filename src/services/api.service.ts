@@ -9,6 +9,7 @@ export const SESSION_EXPIRED_EVENT = 'huellitas:sesion-vencida'
 // Instancia compartida de Axios para todas las peticiones del frontend.
 export const apiClient = axios.create({
     baseURL: API_URL,
+    timeout: 15000,
     headers: {
         Accept: 'application/json'
     }
@@ -54,6 +55,9 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
     } catch (error) {
         // Axios guarda el codigo y el cuerpo de error en response.
         if (axios.isAxiosError(error)) {
+            if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
+                throw new Error('El servidor tardó demasiado en responder. Intenta de nuevo.')
+            }
             if (!error.response) {
                 throw new Error(`No se pudo conectar con el API Gateway (${API_URL || 'http://localhost:8080'}). Revisa que esté iniciado.`)
             }

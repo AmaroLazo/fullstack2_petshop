@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, type ReactNode } from 'react'
 import { useAuth } from './useAuth'
 import { obtenerProductoPorId, type Producto } from '../services/producto.service'
+import { descontarCompra } from '../lib/compra'
+import type { PedidoCliente } from '../services/pedido.service'
 
 export interface ItemCarrito {
   productoId: number
@@ -16,6 +18,7 @@ interface ContextoCarrito {
   cambiarCantidad: (productoId: number, nuevaCantidad: number) => Promise<void>
   quitar: (productoId: number) => void
   vaciar: () => void
+  retirarCompra: (comprados: PedidoCliente['items']) => void
   actualizarPrecios: (nuevos: ItemCarrito[]) => void
 }
 
@@ -94,8 +97,11 @@ export const CarritoProvider = ({ children }: { children: ReactNode }) => {
 
   const quitar = (productoId: number) => actualizar(items.filter((item) => item.productoId !== productoId))
   const vaciar = () => actualizar([])
+  const retirarCompra = (comprados: PedidoCliente['items']) => {
+    if (userId !== null) actualizar(descontarCompra(leerCarrito(userId), comprados))
+  }
 
-  return <CarritoContext.Provider value={{ items, agregar, cambiarCantidad, quitar, vaciar, actualizarPrecios: actualizar }}>{children}</CarritoContext.Provider>
+  return <CarritoContext.Provider value={{ items, agregar, cambiarCantidad, quitar, vaciar, retirarCompra, actualizarPrecios: actualizar }}>{children}</CarritoContext.Provider>
 }
 
 export function useCarrito() {

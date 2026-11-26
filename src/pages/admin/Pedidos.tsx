@@ -31,7 +31,8 @@ const siguientesEstados = (estado: EstadoPedido): EstadoPedido[] => {
 
 
 export const Pedidos = () => {
-  const { pedidos, usuarios, cargando, errores, recargar, cambiarEstadoPedido } = useDatosAdmin()
+  const { pedidos, usuarios, cargando, errores, recargar, cambiarEstadoPedido,
+    pagina, setPagina, totalPaginas, totalPedidos } = useDatosAdmin(true)
   const [estadosElegidos, setEstadosElegidos] = useState<Record<number, EstadoPedido>>({})
   const [pedidoActualizando, setPedidoActualizando] = useState<number | null>(null)
   const [errorEstado, setErrorEstado] = useState('')
@@ -87,7 +88,7 @@ export const Pedidos = () => {
       <div className="hc-dashboard-card">
         <div className="hc-card-heading">
           <div>
-            <h2>{cargando ? 'Consultando...' : pedidos === null ? 'Sin conexión' : `${pedidos.length} pedido(s)`}</h2>
+            <h2>{cargando ? 'Consultando...' : pedidos === null ? 'Sin conexión' : `${totalPedidos} pedido(s)`}</h2>
             <p>{pedidos === null ? 'No se pudo consultar el microservicio de pedidos.' : 'Datos reales de pedidos_db'}</p>
           </div>
         </div>
@@ -161,6 +162,13 @@ export const Pedidos = () => {
             <p className="hc-admin-muted">No hay pedidos registrados en la base de datos.</p>
           )}
         </div>
+        {totalPaginas > 1 && <nav aria-label="Paginación de pedidos" className="hc-admin-actions">
+          <button type="button" className="hc-admin-btn secondary" disabled={cargando || pagina === 0 || pedidoActualizando !== null}
+            onClick={() => setPagina(pagina - 1)}>Anterior</button>
+          <span aria-live="polite">Página {pagina + 1} de {totalPaginas}</span>
+          <button type="button" className="hc-admin-btn secondary" disabled={cargando || pagina + 1 >= totalPaginas || pedidoActualizando !== null}
+            onClick={() => setPagina(pagina + 1)}>Siguiente</button>
+        </nav>}
       </div>
     </section>
   )

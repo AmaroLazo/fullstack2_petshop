@@ -23,7 +23,7 @@ export const Checkout = () => {
     paso, setPaso, metodo, seleccionarMetodo, siguienteDireccion,
     numeroTarjeta, setNumeroTarjeta, titular, setTitular, vencimiento, setVencimiento,
     cvv, setCvv, cuotas, setCuotas, vencimientoValido, vencimientoVencido, numeroTarjetaValido, datosTarjetaCompletos, siguienteTarjeta,
-    total, subtotal, iva, totalEstimado, valorCuota, confirmarCuotas, procesarCompra, procesando, compra, pendienteDetectado
+    total, subtotal, iva, totalEstimado, valorCuota, confirmarCuotas, procesarCompra, procesando, compra, pendienteDetectado, pedidoPendiente
   } = checkout
 
   if (!usuario) return <Navigate to="/login?redirect=%2Fcheckout" replace />
@@ -44,7 +44,10 @@ export const Checkout = () => {
               <span key={etapa} className={`rounded-full px-3 py-2 ${paso === etapa ? 'bg-[#6C2A8A] text-white' : 'bg-purple-50 text-[#6C2A8A]'}`}>{i + 1}. {etapa === 'direccion' ? 'Dirección' : etapa === 'metodo' ? 'Método' : etapa === 'tarjeta' ? 'Tarjeta' : etapa === 'cuotas' ? 'Cuotas' : etapa === 'resumen' ? 'Resumen' : 'Confirmación'}</span>
             ))}
           </nav>
-          {pendienteDetectado && paso !== 'completado' && <div role="status" className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900">Tienes un pedido anterior pendiente de verificar. Al procesar, primero revisaremos su pago para evitar duplicar la compra.</div>}
+          {pendienteDetectado && paso !== 'completado' && <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900">
+            <p>Tienes un pedido anterior pendiente de verificar.</p>
+            <button type="button" className="mt-2 underline" disabled={procesando} onClick={() => void procesarCompra(true)}>Consultar pago pendiente</button>
+          </div>}
           {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
           {cargando ? (
             <p role="status">Consultando tus direcciones registradas...</p>
@@ -123,9 +126,9 @@ export const Checkout = () => {
               <div className="rounded-xl border border-green-200 bg-green-50 p-4"><p className="font-bold">ID de compra: #{compra.pedido.orderId}</p><p className="text-sm">ID de pago: #{compra.pago.id}</p><p className="text-sm">Estado: {compra.pedido.status === 'EN_PREPARACION' ? 'En preparación' : compra.pedido.status}</p></div>
               <h3 className="font-extrabold text-[#3D2645]">Comprobante de compra</h3>
               <div className="space-y-2">{compra.pedido.items?.map((i) => <div key={i.id} className="flex justify-between gap-3 border-b pb-2 text-sm"><span>{i.quantity} × {i.productName}</span><strong>{clp(i.subtotal)}</strong></div>)}</div>
-              <p><strong>Dirección:</strong> {formatearDireccion(compra.direccion)}</p>
-              <p><strong>Método:</strong> {compra.metodo === 'CREDITO' ? 'Crédito' : 'Débito'} · Tarjeta terminada en {compra.ultimos4}</p>
-              {compra.metodo === 'CREDITO' && <p><strong>Cuotas elegidas:</strong> {compra.cuotas} {compra.cuotas === 1 ? 'mes' : 'meses'} · {clp(compra.totalEstimado / compra.cuotas)} por cuota</p>}
+              <p><strong>Dirección:</strong> {formatearDireccion(compra.pedido.shippingAddress) || 'Sin dirección registrada'}</p>
+              <p><strong>Método:</strong> {compra.pago.method === 'CREDITO' ? 'Crédito' : 'Débito'}</p>
+              {compra.pago.method === 'CREDITO' && <p><strong>Cuotas elegidas:</strong> {compra.cuotas} {compra.cuotas === 1 ? 'mes' : 'meses'} · {clp(compra.pago.amount / compra.cuotas)} por cuota</p>}
               <div className="rounded-xl bg-purple-50 p-4"><strong>Total del pedido: {clp(compra.pedido.total)} · Total pagado: {clp(compra.pago.amount)}</strong></div>
               <Link to="/compras" className={`${btn} inline-flex`}>Ver historial de compras</Link>
             </div>
@@ -133,13 +136,17 @@ export const Checkout = () => {
             <div className="space-y-5">
               <h2 className="text-xl font-extrabold text-[#3D2645]">Resumen general de compra</h2>
               <h3 className="font-bold">Productos</h3>
-              <div className="space-y-2">{items.map((i) => <div key={i.productoId} className="flex justify-between gap-3 border-b pb-2 text-sm"><span>{i.cantidad} × {i.nombre}</span><strong>{clp(i.precio * i.cantidad)}</strong></div>)}</div>
-              <p><strong>Dirección:</strong> {formatearDireccion(direccion)}</p>
+              <div className="space-y-2">
+                {pedidoPendiente ? pedidoPendiente.items.map((i) => <div key={i.id} className="flex justify-between gap-3 border-b pb-2 text-sm"><span>{i.quantity} × {i.productName}</span><strong>{clp(i.subtotal)}</strong></div>)
+                  : !pendienteDetectado && items.map((i) => <div key={i.productoId} className="flex justify-between gap-3 border-b pb-2 text-sm"><span>{i.cantidad} × {i.nombre}</span><strong>{clp(i.precio * i.cantidad)}</strong></div>)}
+              </div>
+              {pendienteDetectado && !pedidoPendiente && <p>Consulta el pedido guardado antes de volver a pagar.</p>}
+              <p><strong>Dirección:</strong> {formatearDireccion(pedidoPendiente ? pedidoPendiente.shippingAddress : direccion)}</p>
               <p><strong>Método:</strong> {metodo === 'CREDITO' ? 'Crédito' : 'Débito'}</p>
               <p><strong>Tarjeta:</strong> •••• {numeroTarjeta.slice(-4)}</p>
               {metodo === 'CREDITO' && <p><strong>Cuotas:</strong> {cuotas} {cuotas === 1 ? 'mes' : 'meses'} · {clp(valorCuota)} por cuota</p>}
               <div className="rounded-xl bg-purple-50 p-4"><p>Total de productos: <strong>{clp(total)}</strong></p>{metodo === 'CREDITO' && cuotas > 1 && <p>Total con intereses: <strong>{clp(totalEstimado)}</strong></p>}</div>
-              <button type="button" disabled={procesando} className={`${btn} flex w-full items-center justify-center gap-2`} onClick={() => void procesarCompra()}>{procesando ? <LoaderCircle className="animate-spin" size={20}/> : <CreditCard size={20}/>} Procesar el pago</button>
+              <button type="button" disabled={procesando || (pendienteDetectado && !pedidoPendiente)} className={`${btn} flex w-full items-center justify-center gap-2`} onClick={() => void procesarCompra()}>{procesando ? <LoaderCircle className="animate-spin" size={20}/> : <CreditCard size={20}/>} Procesar el pago</button>
               <p className="text-xs text-gray-500">El total del pago, incluyendo intereses de cuotas cuando corresponda, se calcula en el microservicio de pagos.</p>
               <button type="button" className="text-sm font-semibold text-[#6C2A8A] underline" onClick={() => setPaso(metodo === 'CREDITO' ? 'cuotas' : 'tarjeta')}>Modificar datos</button>
             </div>

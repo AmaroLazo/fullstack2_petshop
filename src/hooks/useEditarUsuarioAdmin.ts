@@ -2,8 +2,7 @@ import { useCallback, useState } from 'react'
 import { useAuth } from './useAuth'
 import type { DatosDireccion } from '../lib/direccion'
 import {
-  actualizarUsuarioAdmin, cambiarRolUsuario, alternarEstadoUsuario,
-  agregarDireccion, eliminarDireccion, obtenerUsuario, type Usuario
+  actualizarUsuarioAdmin, agregarDireccion, eliminarDireccion, type Usuario
 } from '../services/usuario.service'
 
 export const useEditarUsuarioAdmin = () => {
@@ -28,15 +27,7 @@ export const useEditarUsuarioAdmin = () => {
       if (original.userId === usuario?.userId && (datos.role !== 'ADMIN' || !datos.active)) {
         throw new Error('No puedes quitarte el rol ADMIN ni desactivar tu propia cuenta.')
       }
-      let actualizado = original
-      if (datos.name !== original.name || datos.email !== original.email || datos.phone !== (original.phone ?? '')) {
-        actualizado = await actualizarUsuarioAdmin(original.userId, {
-          name: datos.name, email: datos.email, phone: datos.phone
-        })
-      }
-      if (datos.role !== original.role) await cambiarRolUsuario(original.userId, datos.role)
-      if (datos.active !== original.active) await alternarEstadoUsuario(original.userId)
-      actualizado = await obtenerUsuario(original.userId)
+      const actualizado = await actualizarUsuarioAdmin(original.userId, datos)
       if (actualizado.userId === usuario?.userId) actualizarUsuario(actualizado)
       return actualizado
     } catch (e) {

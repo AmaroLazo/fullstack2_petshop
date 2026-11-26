@@ -16,6 +16,7 @@ interface PaginaPedidos {
   content: PedidoCliente[]
   last: boolean
   totalPages: number
+  totalElements: number
 }
 
 export interface NuevaCategoria {
@@ -60,11 +61,14 @@ export const actualizarCategoria = (id: number, datos: ActualizacionCategoria) =
 
 // El endpoint de pedidos devuelve Page<OrderResponse>, no un array.
 // Se recorren todas las páginas para no presentar totales parciales.
+export const listarPaginaPedidos = (pagina: number, size = 20) =>
+  apiRequest<PaginaPedidos>(`/api/orders?page=${pagina}&size=${size}&sort=createdAt,desc`)
+
 export async function listarTodosPedidos(): Promise<PedidoCliente[]> {
   const resultado: PedidoCliente[] = []
   let pagina = 0
   while (true) {
-    const datos = await apiRequest<PaginaPedidos>(`/api/orders?page=${pagina}&size=100&sort=createdAt,desc`)
+    const datos = await listarPaginaPedidos(pagina, 100)
     resultado.push(...datos.content)
     if (datos.last || pagina + 1 >= datos.totalPages) return resultado
     pagina += 1

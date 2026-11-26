@@ -49,7 +49,7 @@ export const obtenerUsuario = (id: number) =>
   apiRequest<Usuario>(`/api/users/${id}`)
 
 // Edición permitida por los endpoints actuales del microservicio de usuarios.
-export const actualizarPerfil = (id: number, datos: { name: string; email: string }) =>
+export const actualizarPerfil = (id: number, datos: { name: string; email: string; phone?: string }) =>
   apiRequest<Usuario>(`/api/users/${id}`, { method: 'PUT', body: JSON.stringify(datos) })
 
 export const cambiarContrasena = (id: number, currentPassword: string, newPassword: string) =>
@@ -65,8 +65,8 @@ export const desactivarCuenta = (id: number) =>
   apiRequest<void>(`/api/users/${id}/deactivate`, { method: 'PATCH' })
 
 // Operaciones de edición usadas por el panel de administración.
-export const actualizarUsuarioAdmin = (id: number, datos: { name: string; email: string; phone: string }) =>
-  apiRequest<Usuario>(`/api/users/${id}`, { method: 'PUT', body: JSON.stringify(datos) })
+export const actualizarUsuarioAdmin = (id: number, datos: { name: string; email: string; phone: string; role: Usuario['role']; active: boolean }) =>
+  apiRequest<Usuario>(`/api/users/${id}/administracion`, { method: 'PUT', body: JSON.stringify(datos) })
 
 export const cambiarRolUsuario = (id: number, role: Usuario['role']) =>
   apiRequest<void>(`/api/users/${id}/role?role=${encodeURIComponent(role)}`, { method: 'PATCH' })

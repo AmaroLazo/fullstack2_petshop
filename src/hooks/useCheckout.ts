@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from './useAuth'
-import { direccionVacia, limpiarDireccion, validarDireccion, type DireccionGuardada } from '../lib/direccion'
+import { direccionVacia, limpiarDireccion, validarDireccion } from '../lib/direccion'
+import { crearComprobante } from '../lib/compra'
 import { useCarrito } from './useCarrito'
 import { agregarDireccion, obtenerUsuario, type Usuario } from '../services/usuario.service'
 import { crearPedido, obtenerPedido, type PedidoCliente } from '../services/pedido.service'
-import { procesarPago, obtenerPagosPorPedido, reintentarPago, type PagoRegistrado } from '../services/pago.service'
+import { procesarPago, obtenerPagosPorPedido, reintentarPago } from '../services/pago.service'
 import { revisarCarrito } from '../services/validacion-carrito.service'
 
 export type MetodoPago = 'DEBITO' | 'CREDITO'
@@ -13,10 +14,23 @@ export const FACTORES_CUOTAS: Record<number, number> = {
   1: 0, 3: 0.03, 6: 0.06, 8: 0.09, 12: 0.12
 }
 
+function leerPedidoPendiente(clave: string): { orderId: number; key: string } | null {
+  try {
+    const raw = localStorage.getItem(clave)
+    if (!raw) return null
+    const dato = JSON.parse(raw) as { orderId?: unknown; key?: unknown }
+    if (Number.isInteger(dato.orderId) && typeof dato.orderId === 'number' && dato.orderId > 0
+        && typeof dato.key === 'string' && dato.key) {
+      return { orderId: dato.orderId, key: dato.key }
+    }
+  } catch { /* El valor local puede estar dañado. */ }
+  return null
+}
+
 // La pasarela del backend es de pruebas; no se envían ni almacenan PAN o CVV.
 export const useCheckout = () => {
   const { usuario, validarUsuario } = useAuth()
-  const { items, vaciar, actualizarPrecios } = useCarrito()
+  const { items, retirarCompra, actualizarPrecios } = useCarrito()
   const [perfil, setPerfil] = useState<Usuario | null>(null)
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState('')
@@ -32,13 +46,24 @@ export const useCheckout = () => {
   const [datosDireccion, setDatosDireccion] = useState(direccionVacia)
   const [guardandoDireccion, setGuardandoDireccion] = useState(false)
   const [errorDireccion, setErrorDireccion] = useState('')
-  const [compra, setCompra] = useState<{ pedido: PedidoCliente; pago: PagoRegistrado; ultimos4: string; metodo: MetodoPago; cuotas: number; totalProductos: number; totalEstimado: number; direccion: DireccionGuardada; productos: {nombre: string; cantidad: number; precio: number}[] } | null>(null)
+  const [compra, setCompra] = useState<ReturnType<typeof crearComprobante> | null>(null)
   const [procesando, setProcesando] = useState(false)
-  const [pendienteDetectado, setPendienteDetectado] = useState(() =>
-    Boolean(usuario && localStorage.getItem(`huellitas_compra_pendiente_${usuario.userId}`)))
+  const clavePendiente = usuario ? `huellitas_compra_pendiente_${usuario.userId}` : ''
+  const [pendiente, setPendiente] = useState(() => leerPedidoPendiente(clavePendiente))
+  const [pedidoPendiente, setPedidoPendiente] = useState<PedidoCliente | null>(null)
+  const pendienteDetectado = Boolean(pendiente)
   useEffect(() => {
-    setPendienteDetectado(Boolean(usuario && localStorage.getItem(`huellitas_compra_pendiente_${usuario.userId}`)))
-  }, [usuario?.userId])
+    setPendiente(leerPedidoPendiente(clavePendiente))
+  }, [clavePendiente])
+  useEffect(() => {
+    setPedidoPendiente(null)
+    if (!pendiente) return
+    let vigente = true
+    obtenerPedido(pendiente.orderId).then(pedido => {
+      if (vigente) setPedidoPendiente(pedido)
+    }).catch(() => { /* La consulta explícita permite reintentar. */ })
+    return () => { vigente = false }
+  }, [pendiente])
   const bloqueoEnvio = useRef(false)
 
   const cargarDirecciones = useCallback(async () => {
@@ -59,7 +84,7 @@ export const useCheckout = () => {
 
   useEffect(() => { void cargarDirecciones() }, [cargarDirecciones])
 
-  const total = items.reduce((s, i) => s + i.precio * i.cantidad, 0)
+  const total = pedidoPendiente?.total ?? items.reduce((s, i) => s + i.precio * i.cantidad, 0)
   // Los precios al consumidor en CLP ya incluyen IVA; se desglosa, no se añade de nuevo.
   const subtotal = Math.round(total / 1.19)
   const iva = total - subtotal
@@ -130,9 +155,10 @@ export const useCheckout = () => {
   const valorCuota = Math.round(totalEstimado / (metodo === 'CREDITO' ? cuotas : 1))
   const confirmarCuotas = () => { setError(''); setPaso('resumen') }
 
-  const procesarCompra = async () => {
+  const procesarCompra = async (soloConsultar = false) => {
     if (bloqueoEnvio.current || procesando || compra) return
-    if (!usuario || !direccion || !metodo || (items.length === 0 && !pendienteDetectado) || !datosTarjetaCompletos || !vencimientoValido) {
+    if (!usuario || (!soloConsultar && (!metodo || !datosTarjetaCompletos || !vencimientoValido))
+        || (!pendienteDetectado && (soloConsultar || !direccion || items.length === 0))) {
       setError('Revisa la dirección, productos y datos de la tarjeta antes de continuar.')
       return
     }
@@ -140,29 +166,19 @@ export const useCheckout = () => {
     setProcesando(true)
     setPaso('procesando')
     setError('')
-    const inicio = Date.now()
-    const minimoVisual = () => new Promise<void>((resolve) => setTimeout(resolve, Math.max(0, 5000 - (Date.now() - inicio))))
     try {
       const cuenta = await validarUsuario()
       if (cuenta.userId !== usuario.userId) throw new Error('La cuenta cambió. Inicia sesión de nuevo.')
-      const direccionActual = cuenta.addresses?.find((d) => d.id === direccion.id)
-      if (!direccionActual) throw new Error('La dirección seleccionada ya no existe.')
 
       // Conservar pedido y clave entre reintentos, para no crear pedidos duplicados
       // cuando falla la llamada al microservicio de pagos.
       const pendingKey = `huellitas_compra_pendiente_${cuenta.userId}`
-      let pendiente: { orderId: number; key: string } | null = null
-      try {
-        const raw = localStorage.getItem(pendingKey)
-        if (raw) {
-          const p = JSON.parse(raw) as { orderId?: unknown; key?: unknown }
-          if (typeof p.orderId === 'number' && p.orderId > 0 && typeof p.key === 'string') {
-            pendiente = { orderId: p.orderId, key: p.key }
-          }
-        }
-      } catch { /* Sin pedido previo válido */ }
-
-      if (!pendiente) {
+      const anterior = leerPedidoPendiente(pendingKey)
+      let operacion = anterior
+      if (!operacion) {
+        if (soloConsultar || !items.length) throw new Error('No se encontró una compra pendiente.')
+        const direccionActual = cuenta.addresses?.find((d) => d.id === direccion?.id)
+        if (!direccionActual) throw new Error('La dirección seleccionada ya no existe.')
         const revision = await revisarCarrito(items)
         if (revision.problemas.length) {
           throw new Error(revision.problemas.map((p) => `${p.nombre}: ${p.motivo}`).join(' | ') + ' Vuelve al carrito para corregirlo.')
@@ -179,40 +195,56 @@ export const useCheckout = () => {
           },
           items: items.map(({ productoId, cantidad }) => ({ productId: productoId, quantity: cantidad }))
         })
-        pendiente = { orderId: pedidoNuevo.orderId, key: crypto.randomUUID() }
-        localStorage.setItem(pendingKey, JSON.stringify(pendiente))
+        operacion = { orderId: pedidoNuevo.orderId, key: crypto.randomUUID() }
+        localStorage.setItem(pendingKey, JSON.stringify(operacion))
+        setPendiente(operacion)
+      }
+      const pedidoId = operacion.orderId
+      if (anterior) {
+        const guardado = await obtenerPedido(pedidoId)
+        setPedidoPendiente(guardado)
+        if (guardado.status === 'CANCELADO') {
+          localStorage.removeItem(pendingKey)
+          setPendiente(null)
+          throw new Error('El pedido anterior está cancelado. Puedes iniciar una compra nueva.')
+        }
+        if (!soloConsultar && pedidoPendiente?.orderId !== pedidoId) {
+          throw new Error('Revisa primero el pedido guardado en el resumen antes de confirmar el pago.')
+        }
       }
       // Ante pérdida de conexión, consultar primero el pago anterior evita duplicarlo.
-      const pagosPrevios = await obtenerPagosPorPedido(pendiente.orderId)
+      const pagosPrevios = await obtenerPagosPorPedido(pedidoId)
       const exitoso = pagosPrevios.find((p) => p.status === 'SUCCESS')
       const enProceso = pagosPrevios.some((p) => p.status === 'PROCESSING' || p.status === 'PENDING')
       if (enProceso && !exitoso) throw new Error('El pago aún está en proceso. Revisa el historial o intenta recuperarlo después.')
       const fallido = pagosPrevios.find((p) => p.status === 'FAILED')
-      const pago = exitoso ?? (fallido
-        ? await reintentarPago(fallido.id)
-        : await procesarPago({ orderId: pendiente.orderId, method: metodo, idempotencyKey: pendiente.key, installments: metodo === 'CREDITO' ? cuotas : 1 }))
+      let pago = exitoso
+      if (!pago) {
+        if (soloConsultar || !metodo) throw new Error('El pedido todavía no tiene un pago confirmado.')
+        try {
+          pago = fallido
+            ? await reintentarPago(fallido.id)
+            : await procesarPago({ orderId: pedidoId, method: metodo, idempotencyKey: operacion.key, installments: metodo === 'CREDITO' ? cuotas : 1 })
+        } catch {
+          pago = (await obtenerPagosPorPedido(pedidoId).catch(() => []))
+            .find((resultado) => resultado.status === 'SUCCESS')
+          if (!pago) throw new Error('No se confirmó el pago. Consulta el estado del pedido antes de reintentar.')
+        }
+      }
       if (pago.status !== 'SUCCESS') {
-        throw new Error(`No se completó el pago (estado: ${pago.status}). El pedido #${pendiente.orderId} está registrado y puedes revisarlo en tu historial.`)
+        throw new Error(`No se completó el pago (estado: ${pago.status}). El pedido #${pedidoId} está registrado y puedes revisarlo en tu historial.`)
       }
       // Usamos el pedido confirmado en backend para mostrar precios reales y estado.
-      const pedido = await obtenerPedido(pendiente.orderId)
-      const vista = {
-        pedido, pago, ultimos4: numeroTarjeta.slice(-4), metodo: pago.method, cuotas: pago.installments ?? 1,
-        totalProductos: pedido.total, totalEstimado: pago.amount,
-        direccion: pedido.shippingAddress ?? direccionActual,
-        productos: items.map((i) => ({ nombre: i.nombre, cantidad: i.cantidad, precio: i.precio }))
-      }
-      await minimoVisual()
-      setCompra(vista)
+      const pedido = await obtenerPedido(pedidoId)
+      retirarCompra(pedido.items)
+      setCompra(crearComprobante(pedido, pago))
       setNumeroTarjeta(''); setCvv(''); setVencimiento(''); setTitular('')
       localStorage.removeItem(pendingKey)
-      setPendienteDetectado(false)
-      vaciar()
+      setPendiente(null)
       setPaso('completado')
     } catch (e) {
-      await minimoVisual()
       setError(e instanceof Error ? e.message : 'No se pudo completar la compra.')
-      setPaso('resumen')
+      setPaso(soloConsultar ? 'direccion' : 'resumen')
     } finally {
       setProcesando(false)
       bloqueoEnvio.current = false
@@ -230,6 +262,6 @@ export const useCheckout = () => {
     cvv, setCvv, cuotas, setCuotas,
     vencimientoValido, vencimientoVencido, numeroTarjetaValido,
     datosTarjetaCompletos, siguienteTarjeta,
-    total, subtotal, iva, totalEstimado, valorCuota, confirmarCuotas, procesarCompra, procesando, compra, pendienteDetectado
+    total, subtotal, iva, totalEstimado, valorCuota, confirmarCuotas, procesarCompra, procesando, compra, pendienteDetectado, pedidoPendiente
   }
 }

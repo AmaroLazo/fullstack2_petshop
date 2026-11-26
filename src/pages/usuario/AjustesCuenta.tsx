@@ -8,12 +8,15 @@ const mensajeError = (error: unknown) => error instanceof Error ? error.message 
 
 import { CamposDireccion } from '../../components/CamposDireccion'
 import { direccionVacia, formatearDireccion, limpiarDireccion, validarDireccion } from '../../lib/direccion'
+import { validarTelefono } from '../../lib/validaciones-auth'
 
 export const AjustesCuenta = () => {
   const navigate = useNavigate()
   const { usuario, perfil, cargando, error, refrescar, guardarEnSesion, validarUsuario, salir } = useCuenta()
   const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
+  const [telefono, setTelefono] = useState('')
+  const [telefonoEditado, setTelefonoEditado] = useState(false)
   const [actual, setActual] = useState('')
   const [nueva, setNueva] = useState('')
   const [datosDireccion, setDatosDireccion] = useState(direccionVacia)
@@ -21,7 +24,15 @@ export const AjustesCuenta = () => {
   const [aviso, setAviso] = useState('')
   const [fallo, setFallo] = useState('')
 
-  useEffect(() => { if (perfil) { setNombre(perfil.name); setEmail(perfil.email) } }, [perfil])
+  useEffect(() => {
+    if (!perfil) return
+    setNombre(perfil.name)
+    setEmail(perfil.email)
+    const digitos = (perfil.phone ?? '').replace(/\D/g, '')
+    const numeroLocal = digitos.replace(/^(?:569|9)(?=[0-9]{8}$)/, '')
+    setTelefono(numeroLocal.length === 8 ? numeroLocal : '')
+    setTelefonoEditado(false)
+  }, [perfil])
 
   const ejecutar = async (accion: string, operacion: () => Promise<void>, exito: string) => {
     setProcesando(accion); setFallo(''); setAviso('')
@@ -33,8 +44,13 @@ export const AjustesCuenta = () => {
   const guardarPerfil = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     void ejecutar('perfil', async () => {
+      const problema = telefono ? validarTelefono(telefono) : ''
+      if (problema) throw new Error(problema)
       const cuenta = await validarUsuario()
-      const resultado = await actualizarPerfil(cuenta.userId, { name: nombre.trim(), email: email.trim() })
+      const resultado = await actualizarPerfil(cuenta.userId, {
+        name: nombre.trim(), email: email.trim(),
+        phone: telefonoEditado ? (telefono ? `+569${telefono}` : '') : undefined
+      })
       guardarEnSesion(resultado)
     }, 'Tus datos se actualizaron correctamente.')
   }
@@ -83,7 +99,13 @@ export const AjustesCuenta = () => {
     {perfil && <div className="hc-profile-settings">
       <section className="hc-profile-card"><h2><UserRound size={20}/> Datos personales</h2>
         <form onSubmit={guardarPerfil} className="hc-profile-form"><label>Nombre completo<input required minLength={2} maxLength={100} value={nombre} onChange={(e) => setNombre(e.target.value)}/></label><label>Correo electrónico<input required type="email" value={email} onChange={(e) => setEmail(e.target.value)}/></label>
-          <label>Número de teléfono<input value={perfil.phone || ''} disabled aria-describedby="hc-phone-note"/></label><p id="hc-phone-note" className="hc-profile-muted">El backend actual permite registrar el teléfono, pero todavía no editarlo.</p>
+          <label>Número de teléfono (+56 9)
+            <input type="tel" inputMode="numeric" autoComplete="tel-local" maxLength={8} pattern="[0-9]{8}" value={telefono}
+              onChange={(e) => {
+                setTelefono(e.target.value.replace(/\D/g, '').slice(0, 8))
+                setTelefonoEditado(true)
+              }} placeholder="Los 8 dígitos restantes" />
+          </label>
           <button className="hc-profile-primary" type="submit" disabled={Boolean(procesando)}><Save size={16}/>{procesando === 'perfil' ? 'Guardando...' : 'Guardar cambios'}</button></form></section>
       <section className="hc-profile-card"><h2><MapPin size={20}/> Mis direcciones</h2>
         {perfil.addresses?.length ? <div className="hc-profile-addresses">{perfil.addresses.map((direccion) => <div className="hc-profile-address-row" key={direccion.id}><span>{formatearDireccion(direccion)}</span><button type="button" className="hc-profile-danger-link" onClick={() => borrarDireccion(direccion.id)} disabled={Boolean(procesando)} aria-label={`Eliminar dirección ${direccion.street}`}><Trash2 size={16}/> Eliminar</button></div>)}</div> : <p>No tienes direcciones registradas.</p>}

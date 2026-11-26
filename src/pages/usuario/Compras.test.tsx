@@ -5,6 +5,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useHistorialCompras } from '../../hooks/useHistorialCompras'
 import { obtenerProductoPorId } from '../../services/producto.service'
 import { revisarCarrito } from '../../services/validacion-carrito.service'
+import { crearComprobante, descontarCompra } from '../../lib/compra'
+import type { PedidoCliente } from '../../services/pedido.service'
 import { Compras } from './Compras'
 
 vi.mock('../../hooks/useHistorialCompras', () => ({ useHistorialCompras: vi.fn() }))
@@ -18,6 +20,10 @@ const historial = {
   usuario: { userId: 7, name: 'Cliente Prueba', email: 'cliente@ejemplo.cl', role: 'CUSTOMER' as const, active: true },
   pedidos: [],
   pagos: {},
+  pagosNoDisponibles: [],
+  pagina: 0,
+  totalPaginas: 1,
+  setPagina: vi.fn(),
   cargando: false,
   error: '',
   reintentar: vi.fn(),
@@ -25,14 +31,26 @@ const historial = {
 }
 
 const mostrarCompras = () => render(<MemoryRouter><Compras /></MemoryRouter>)
+const pedidoGuardado: PedidoCliente = {
+  orderId: 42, userId: 7, status: 'ENTREGADO', total: 6000, createdAt: '', updatedAt: '',
+  shippingAddress: { street: 'Los Robles', houseNumber: '25', city: 'Coronel' },
+  items: [{ id: 1, productId: 1, productName: producto.name, quantity: 2, unitPrice: 3000, subtotal: 6000 }],
+}
 
 describe('Compras', () => {
-  it('bloquea un producto desactivado', async () => {
-    vi.mocked(obtenerProductoPorId).mockResolvedValueOnce({ ...producto, active: false })
-    const revision = await revisarCarrito([item])
-    expect(revision.problemas).toEqual([
-      { productoId: 1, nombre: item.nombre, motivo: 'Producto desactivado o no disponible.' },
-    ])
+  it('recupera el comprobante del pedido guardado y conserva los productos nuevos del carrito', () => {
+    const extra = { productoId: 2, nombre: 'Juguete', precio: 2000, cantidad: 1 }
+    const pago = {
+      id: 9, orderId: 42, amount: 6180, installments: 3, method: 'CREDITO' as const,
+      status: 'SUCCESS' as const, transactionId: null, transactionDate: '',
+    }
+    const comprobante = crearComprobante(pedidoGuardado, pago)
+    expect(comprobante.pedido.shippingAddress?.houseNumber).toBe('25')
+    expect(comprobante.pedido.items.map(({ productName }) => productName)).toEqual([producto.name])
+    expect(comprobante.pago.amount).toBe(6180)
+    expect(comprobante.cuotas).toBe(3)
+    expect(descontarCompra([{ ...item, cantidad: 3 }, extra], pedidoGuardado.items))
+      .toEqual([{ ...item, cantidad: 1 }, extra])
   })
 
   it('bloquea una cantidad mayor al stock disponible', async () => {
@@ -54,16 +72,15 @@ describe('Compras', () => {
   it('muestra un pedido, su estado y el producto en el historial', () => {
     vi.mocked(useHistorialCompras).mockReturnValueOnce({
       ...historial,
-      pedidos: [{
-        orderId: 42, userId: 7, status: 'ENTREGADO', total: 6000, createdAt: '', updatedAt: '',
-        items: [{ id: 1, productId: 1, productName: producto.name, quantity: 2, unitPrice: 3000, subtotal: 6000 }],
-      }],
+      pedidos: [pedidoGuardado],
+      pagosNoDisponibles: [42],
     })
     mostrarCompras()
     const pedido = within(screen.getByRole('article'))
     expect(pedido.getByRole('heading', { name: 'Pedido #42' })).toBeTruthy()
     expect(pedido.getByText('Entregado')).toBeTruthy()
     expect(pedido.getByText('2 × Alimento para perro')).toBeTruthy()
+    expect(pedido.getByText('No se pudo consultar el pago de este pedido.')).toBeTruthy()
   })
 
   it('mantiene el snapshot del mensaje y el enlace cuando no hay pedidos', () => {

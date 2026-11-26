@@ -12,12 +12,7 @@ import { Compras } from '../pages/usuario/Compras'
 import { AjustesCuenta } from '../pages/usuario/AjustesCuenta'
 import { DetalleProducto } from '../pages/usuario/DetalleProducto'
 
-import { Dashboard } from '../pages/admin/Dashboard'
-import { Productos } from '../pages/admin/Productos'
-import { Categorias } from '../pages/admin/Categorias'
-import { Pedidos } from '../pages/admin/Pedidos'
-import { Usuarios } from '../pages/admin/Usuarios'
-import { Reportes } from '../pages/admin/Reportes'
+import { ErrorPagina, PaginaNoEncontrada } from '../pages/usuario/ErrorPagina'
 
 import { Login } from '../pages/auth/Login'
 import { Registro } from '../pages/auth/Registro'
@@ -27,6 +22,7 @@ export const rootRouter = createBrowserRouter([
     {
         path: '/',
         element: <UsuarioLayout></UsuarioLayout>,
+        errorElement: <ErrorPagina />,
         children: [
             {
                 index: true,
@@ -59,45 +55,56 @@ export const rootRouter = createBrowserRouter([
             {
                 path: 'producto/:id',
                 element: <DetalleProducto></DetalleProducto>
+            },
+            {
+                path: '*',
+                element: <PaginaNoEncontrada />
             }
         ]
     },
     {
         path: '/admin',
         element: <AdminRoute></AdminRoute>,
+        errorElement: <ErrorPagina />,
         children: [
             {
                 index: true,
-                element: <Dashboard></Dashboard>
+                lazy: async () => ({ Component: (await import('../pages/admin/Dashboard')).Dashboard })
             },
             {
                 path: 'productos',
-                element: <Productos></Productos>
+                lazy: async () => ({ Component: (await import('../pages/admin/Productos')).Productos })
             },
             {
                 path: 'categorias',
-                element: <Categorias></Categorias>
+                lazy: async () => ({ Component: (await import('../pages/admin/Categorias')).Categorias })
             },
             {
                 path: 'pedidos',
-                element: <Pedidos></Pedidos>
+                lazy: async () => ({ Component: (await import('../pages/admin/Pedidos')).Pedidos })
             },
             {
                 path: 'usuarios',
-                element: <Usuarios></Usuarios>
+                lazy: async () => ({ Component: (await import('../pages/admin/Usuarios')).Usuarios })
             },
             {
                 path: 'reportes',
-                element: <Reportes></Reportes>
+                lazy: async () => ({ Component: (await import('../pages/admin/Reportes')).Reportes })
+            },
+            {
+                path: '*',
+                element: <PaginaNoEncontrada />
             }
         ]
     },
     {
         path: '/login',
-        element: <Login></Login>
+        element: <Login></Login>,
+        errorElement: <ErrorPagina />
     },
     {
         path: '/registro',
-        element: <Registro></Registro>
+        element: <Registro></Registro>,
+        errorElement: <ErrorPagina />
     }
 ])

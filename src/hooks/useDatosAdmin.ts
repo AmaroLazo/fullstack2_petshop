@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
-import { actualizarEstadoPedido, listarTodosPedidos, listarTodosUsuarios, listarTodasCategorias } from '../services/admin.service'
+import { actualizarEstadoPedido, listarPaginaPedidos, listarTodosUsuarios } from '../services/admin.service'
 import type { EstadoPedido, PedidoCliente } from '../services/pedido.service'
 import type { Usuario } from '../services/usuario.service'
-import type { Categoria } from '../services/producto.service'
 
-export function useDatosAdmin() {
+export function useDatosAdmin(incluirPedidos = false) {
   const [usuarios, setUsuarios] = useState<Usuario[] | null>(null)
   const [pedidos, setPedidos] = useState<PedidoCliente[] | null>(null)
-  const [categorias, setCategorias] = useState<Categoria[] | null>(null)
+  const [pagina, setPagina] = useState(0)
+  const [totalPaginas, setTotalPaginas] = useState(0)
+  const [totalPedidos, setTotalPedidos] = useState(0)
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState<Error | null>(null)
   const [errores, setErrores] = useState<string[]>([])
@@ -16,16 +17,20 @@ export function useDatosAdmin() {
     setCargando(true)
     setError(null)
     try {
-      const [u, p, c] = await Promise.allSettled([
-        listarTodosUsuarios(), listarTodosPedidos(), listarTodasCategorias()
+      const [u, p] = await Promise.allSettled([
+        listarTodosUsuarios(), incluirPedidos ? listarPaginaPedidos(pagina) : Promise.resolve(null)
       ])
       setUsuarios(u.status === 'fulfilled' ? u.value : null)
-      setPedidos(p.status === 'fulfilled' ? p.value : null)
-      setCategorias(c.status === 'fulfilled' ? c.value : null)
+      const paginaPedidos = p.status === 'fulfilled' ? p.value : null
+      setPedidos(paginaPedidos?.content ?? null)
+      setTotalPaginas(paginaPedidos?.totalPages ?? 0)
+      setTotalPedidos(paginaPedidos?.totalElements ?? 0)
+      if (paginaPedidos && pagina > 0 && pagina >= paginaPedidos.totalPages) {
+        setPagina(Math.max(0, paginaPedidos.totalPages - 1))
+      }
       const mensajes = [
         ...(u.status === 'rejected' ? ['No se pudieron consultar los usuarios.'] : []),
-        ...(p.status === 'rejected' ? ['No se pudieron consultar los pedidos.'] : []),
-        ...(c.status === 'rejected' ? ['No se pudieron consultar las categorías.'] : [])
+        ...(p.status === 'rejected' ? ['No se pudieron consultar los pedidos.'] : [])
       ]
       setErrores(mensajes)
       if (mensajes.length) setError(new Error(mensajes.join(' ')))
@@ -34,7 +39,7 @@ export function useDatosAdmin() {
     } finally {
       setCargando(false)
     }
-  }, [])
+  }, [incluirPedidos, pagina])
 
   const cambiarEstadoPedido = useCallback(async (id: number, status: EstadoPedido) => {
     const actualizado = await actualizarEstadoPedido(id, status)
@@ -43,5 +48,6 @@ export function useDatosAdmin() {
   }, [])
 
   useEffect(() => { void cargarDatos() }, [cargarDatos])
-  return { usuarios, pedidos, categorias, cargando, error, errores, recargar: cargarDatos, cambiarEstadoPedido }
+  return { usuarios, pedidos, pagina, setPagina, totalPaginas, totalPedidos, cargando, error, errores,
+    recargar: cargarDatos, cambiarEstadoPedido }
 }
