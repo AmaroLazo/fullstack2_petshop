@@ -6,6 +6,15 @@ const API_URL = (import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'ht
 export const ACCESS_TOKEN_KEY = 'huellitas_access_token'
 export const SESSION_EXPIRED_EVENT = 'huellitas:sesion-vencida'
 
+export class RespuestaApiError extends Error {
+    readonly status: number
+
+    constructor(status: number, mensaje: string) {
+        super(mensaje)
+        this.status = status
+    }
+}
+
 // Instancia compartida de Axios para todas las peticiones del frontend.
 export const apiClient = axios.create({
     baseURL: API_URL,
@@ -83,7 +92,8 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
                 }
             }
 
-            throw new Error(mensaje || `Error ${error.response.status}: ${error.response.statusText || 'No se pudo completar la solicitud.'}`)
+            throw new RespuestaApiError(error.response.status,
+                mensaje || `Error ${error.response.status}: ${error.response.statusText || 'No se pudo completar la solicitud.'}`)
         }
 
         throw error instanceof Error ? error : new Error('Ocurrió un error inesperado al comunicarse con el servidor.')

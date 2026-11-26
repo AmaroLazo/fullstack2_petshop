@@ -1,6 +1,29 @@
 import type { ItemCarrito } from '../hooks/useCarrito'
 import type { PagoRegistrado } from '../services/pago.service'
-import type { PedidoCliente } from '../services/pedido.service'
+import type { DatosNuevoPedido, PedidoCliente } from '../services/pedido.service'
+
+export interface IntentoCompra {
+  key: string
+  orderId?: number
+  datos?: DatosNuevoPedido
+}
+
+export const claveCompraPendiente = (userId: number) => `huellitas_compra_pendiente_${userId}`
+
+export function leerCompraPendiente(userId: number): IntentoCompra | null {
+  try {
+    const raw = localStorage.getItem(claveCompraPendiente(userId))
+    if (!raw) return null
+    const intento = JSON.parse(raw) as IntentoCompra
+    if (typeof intento.key !== 'string' || !intento.key) return null
+    if (Number.isInteger(intento.orderId) && intento.orderId! > 0) return intento
+    if (intento.datos?.userId === userId && intento.datos.creationKey === intento.key
+        && Array.isArray(intento.datos.items) && intento.datos.items.length && intento.datos.shippingAddress) {
+      return intento
+    }
+  } catch { /* El valor local puede estar dañado. */ }
+  return null
+}
 
 export function crearComprobante(pedido: PedidoCliente, pago: PagoRegistrado) {
   return { pedido, pago, cuotas: pago.installments ?? 1 }

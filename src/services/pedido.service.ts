@@ -20,8 +20,16 @@ export const listarPedidosPorUsuario = (userId: number) =>
 export const obtenerPedido = (id: number) =>
   apiRequest<PedidoCliente>(`/api/orders/${id}`)
 
-export const crearPedido = (datos: {
+export interface DatosNuevoPedido {
   userId: number
+  creationKey: string
   items: Array<{ productId: number; quantity: number }>
   shippingAddress: DireccionGuardada
-}) => apiRequest<PedidoCliente>('/api/orders', { method: 'POST', body: JSON.stringify(datos) })
+}
+
+export const crearPedido = (datos: DatosNuevoPedido) =>
+  apiRequest<PedidoCliente>('/api/orders', { method: 'POST', body: JSON.stringify(datos) })
+
+export const obtenerPedidoPorIntento = (key: string) =>
+  apiRequest<PedidoCliente | null>(`/api/orders/intentos/${encodeURIComponent(key)}`, { cache: 'no-store' })
+    .then(pedido => pedido || null)

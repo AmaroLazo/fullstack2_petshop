@@ -23,7 +23,8 @@ export const Checkout = () => {
     paso, setPaso, metodo, seleccionarMetodo, siguienteDireccion,
     numeroTarjeta, setNumeroTarjeta, titular, setTitular, vencimiento, setVencimiento,
     cvv, setCvv, cuotas, setCuotas, vencimientoValido, vencimientoVencido, numeroTarjetaValido, datosTarjetaCompletos, siguienteTarjeta,
-    total, subtotal, iva, totalEstimado, valorCuota, confirmarCuotas, procesarCompra, procesando, compra, pendienteDetectado, pedidoPendiente
+    total, subtotal, iva, totalEstimado, valorCuota, confirmarCuotas, procesarCompra, procesando, compra,
+    pendienteDetectado, pedidoPendiente, pagoFallido, pedidoSinConfirmar
   } = checkout
 
   if (!usuario) return <Navigate to="/login?redirect=%2Fcheckout" replace />
@@ -46,10 +47,22 @@ export const Checkout = () => {
           </nav>
           {pendienteDetectado && paso !== 'completado' && <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-sm font-semibold text-amber-900">
             <p>Tienes un pedido anterior pendiente de verificar.</p>
-            <button type="button" className="mt-2 underline" disabled={procesando} onClick={() => void procesarCompra(true)}>Consultar pago pendiente</button>
+            <button type="button" className="mt-2 underline" disabled={procesando}
+              onClick={() => void procesarCompra('consultar')}>Consultar estado de la compra</button>
+            {pedidoSinConfirmar && <button type="button" className="ml-4 mt-2 underline" disabled={procesando}
+              onClick={() => void procesarCompra('recuperar-pedido')}>Recuperar pedido</button>}
           </div>}
           {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
-          {cargando ? (
+          {pagoFallido && paso !== 'procesando' && paso !== 'completado' ? (
+            <section className="space-y-3">
+              <h2 className="text-xl font-bold">Reintentar pago del pedido #{pagoFallido.orderId}</h2>
+              <p><strong>Método guardado:</strong> {pagoFallido.method === 'CREDITO' ? 'Crédito' : 'Débito'}</p>
+              <p><strong>Cuotas:</strong> {pagoFallido.installments ?? 1}</p>
+              <p><strong>Total a pagar:</strong> {clp(pagoFallido.amount)}</p>
+              <button type="button" className={btn} disabled={procesando}
+                onClick={() => void procesarCompra('reintentar-pago')}>Confirmar reintento</button>
+            </section>
+          ) : cargando ? (
             <p role="status">Consultando tus direcciones registradas...</p>
           ) : !perfil ? (
             <div className="space-y-3"><p>No se pudo cargar tu perfil y tus direcciones.</p><button className={btn} onClick={() => void recargar()} type="button">Reintentar</button></div>
@@ -80,12 +93,13 @@ export const Checkout = () => {
                   <button type="submit" className={btn} disabled={guardandoDireccion}>{guardandoDireccion ? 'Guardando dirección...' : 'Guardar dirección'}</button>
                 </form>
               )}
-              <div><button type="button" className={btn} onClick={siguienteDireccion} disabled={!direccion}>Continuar al método de pago</button></div>
+              <div><button type="button" className={btn} onClick={siguienteDireccion}
+                disabled={pedidoSinConfirmar || (!direccion && !pedidoPendiente?.shippingAddress)}>Continuar al método de pago</button></div>
             </div>
           ) : paso === 'metodo' ? (
             <div className="space-y-5">
               <h2 className="text-xl font-extrabold text-[#3D2645]">Selecciona el método de pago</h2>
-              <p className="text-sm text-gray-600">Dirección: {formatearDireccion(direccion)}</p>
+              <p className="text-sm text-gray-600">Dirección: {formatearDireccion(pedidoPendiente ? pedidoPendiente.shippingAddress : direccion)}</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <button type="button" onClick={() => seleccionarMetodo('DEBITO')} className="flex items-center gap-3 rounded-xl border-2 border-purple-200 p-5 text-left font-bold text-[#3D2645] hover:border-[#6C2A8A] hover:bg-purple-50"><Wallet size={30} className="text-[#6C2A8A]"/> Tarjeta de débito</button>
                 <button type="button" onClick={() => seleccionarMetodo('CREDITO')} className="flex items-center gap-3 rounded-xl border-2 border-purple-200 p-5 text-left font-bold text-[#3D2645] hover:border-[#6C2A8A] hover:bg-purple-50"><CreditCard size={30} className="text-[#6C2A8A]"/> Tarjeta de crédito</button>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import { Package, RefreshCw } from 'lucide-react'
 import { useHistorialCompras } from '../../hooks/useHistorialCompras'
+import { leerCompraPendiente } from '../../lib/compra'
 
 const dinero = (valor: number) => Number(valor ?? 0).toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
 const estados: Record<string, string> = { PENDIENTE: 'Pendiente', CANCELADO: 'Cancelado', EN_PREPARACION: 'En preparación', ENVIADO: 'Enviado', ENTREGADO: 'Entregado' }
@@ -11,6 +12,8 @@ export const Compras = () => {
   if (!usuario) return <section className="hc-profile-panel"><h1>Historial de compras</h1><p>Debes <Link to="/login?redirect=%2Fcompras" className="underline">iniciar sesión</Link> para consultar tus pedidos.</p></section>
   return <section className="hc-profile-panel">
     <div className="hc-profile-heading"><div><span className="hc-profile-kicker">MIS PEDIDOS</span><h1>Historial de compras</h1><p>Pedidos registrados en el microservicio de pedidos. Los pendientes aún no son compras finalizadas.</p></div></div>
+    {usuario.role === 'CUSTOMER' && leerCompraPendiente(usuario.userId) &&
+      <Link to="/checkout" className="hc-profile-secondary">Revisar compra pendiente</Link>}
     {cargando && <p role="status">Consultando tus pedidos...</p>}
     {error && <div role="alert" className="hc-profile-card"><p>{error}</p><button type="button" className="hc-profile-secondary" onClick={reintentar}><RefreshCw size={16}/> Reintentar</button></div>}
     {!cargando && !error && !pedidos.length && <div className="hc-profile-empty"><Package size={38}/><h2>Aún no tienes pedidos</h2><p>Cuando realices un pedido aparecerá aquí.</p><Link to="/catalogo" className="hc-profile-primary">Explorar catálogo</Link></div>}

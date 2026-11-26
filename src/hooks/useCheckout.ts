@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from './useAuth'
 import { direccionVacia, limpiarDireccion, validarDireccion } from '../lib/direccion'
-import { crearComprobante } from '../lib/compra'
+import { claveCompraPendiente, crearComprobante, leerCompraPendiente } from '../lib/compra'
 import { useCarrito } from './useCarrito'
 import { agregarDireccion, obtenerUsuario, type Usuario } from '../services/usuario.service'
-import { crearPedido, obtenerPedido, type PedidoCliente } from '../services/pedido.service'
-import { procesarPago, obtenerPagosPorPedido, reintentarPago } from '../services/pago.service'
+import { crearPedido, obtenerPedido, obtenerPedidoPorIntento, type PedidoCliente } from '../services/pedido.service'
+import { procesarPago, obtenerPagosPorPedido, reintentarPago, type PagoRegistrado } from '../services/pago.service'
 import { revisarCarrito } from '../services/validacion-carrito.service'
+import { RespuestaApiError } from '../services/api.service'
 
 export type MetodoPago = 'DEBITO' | 'CREDITO'
 export type PasoCheckout = 'direccion' | 'metodo' | 'tarjeta' | 'cuotas' | 'resumen' | 'procesando' | 'completado'
@@ -14,18 +15,7 @@ export const FACTORES_CUOTAS: Record<number, number> = {
   1: 0, 3: 0.03, 6: 0.06, 8: 0.09, 12: 0.12
 }
 
-function leerPedidoPendiente(clave: string): { orderId: number; key: string } | null {
-  try {
-    const raw = localStorage.getItem(clave)
-    if (!raw) return null
-    const dato = JSON.parse(raw) as { orderId?: unknown; key?: unknown }
-    if (Number.isInteger(dato.orderId) && typeof dato.orderId === 'number' && dato.orderId > 0
-        && typeof dato.key === 'string' && dato.key) {
-      return { orderId: dato.orderId, key: dato.key }
-    }
-  } catch { /* El valor local puede estar dañado. */ }
-  return null
-}
+type AccionCompra = 'pagar' | 'consultar' | 'recuperar-pedido' | 'reintentar-pago'
 
 // La pasarela del backend es de pruebas; no se envían ni almacenan PAN o CVV.
 export const useCheckout = () => {
@@ -48,19 +38,25 @@ export const useCheckout = () => {
   const [errorDireccion, setErrorDireccion] = useState('')
   const [compra, setCompra] = useState<ReturnType<typeof crearComprobante> | null>(null)
   const [procesando, setProcesando] = useState(false)
-  const clavePendiente = usuario ? `huellitas_compra_pendiente_${usuario.userId}` : ''
-  const [pendiente, setPendiente] = useState(() => leerPedidoPendiente(clavePendiente))
+  const userId = usuario?.userId
+  const [pendiente, setPendiente] = useState(() => userId ? leerCompraPendiente(userId) : null)
   const [pedidoPendiente, setPedidoPendiente] = useState<PedidoCliente | null>(null)
+  const [pagoFallido, setPagoFallido] = useState<PagoRegistrado | null>(null)
   const pendienteDetectado = Boolean(pendiente)
   useEffect(() => {
-    setPendiente(leerPedidoPendiente(clavePendiente))
-  }, [clavePendiente])
+    setPendiente(userId ? leerCompraPendiente(userId) : null)
+    setPagoFallido(null)
+  }, [userId])
   useEffect(() => {
-    setPedidoPendiente(null)
-    if (!pendiente) return
+    if (!pendiente?.orderId) {
+      setPedidoPendiente(null)
+      return
+    }
     let vigente = true
-    obtenerPedido(pendiente.orderId).then(pedido => {
-      if (vigente) setPedidoPendiente(pedido)
+    Promise.all([obtenerPedido(pendiente.orderId), obtenerPagosPorPedido(pendiente.orderId)]).then(([pedido, pagos]) => {
+      if (!vigente) return
+      setPedidoPendiente(pedido)
+      setPagoFallido(pagos.some(pago => pago.status === 'SUCCESS') ? null : pagos.find(pago => pago.status === 'FAILED') ?? null)
     }).catch(() => { /* La consulta explícita permite reintentar. */ })
     return () => { vigente = false }
   }, [pendiente])
@@ -90,7 +86,7 @@ export const useCheckout = () => {
   const iva = total - subtotal
   const direccion = perfil?.addresses?.find((d) => d.id === direccionId)
   const siguienteDireccion = () => {
-    if (!direccion) { setError('Selecciona o agrega una dirección para continuar.'); return }
+    if (!direccion && !pedidoPendiente?.shippingAddress) { setError('Selecciona o agrega una dirección para continuar.'); return }
     setError(''); setPaso('metodo')
   }
   const guardarDireccion = async () => {
@@ -155,10 +151,10 @@ export const useCheckout = () => {
   const valorCuota = Math.round(totalEstimado / (metodo === 'CREDITO' ? cuotas : 1))
   const confirmarCuotas = () => { setError(''); setPaso('resumen') }
 
-  const procesarCompra = async (soloConsultar = false) => {
-    if (bloqueoEnvio.current || procesando || compra) return
-    if (!usuario || (!soloConsultar && (!metodo || !datosTarjetaCompletos || !vencimientoValido))
-        || (!pendienteDetectado && (soloConsultar || !direccion || items.length === 0))) {
+  const procesarCompra = async (accion: AccionCompra = 'pagar') => {
+    if (bloqueoEnvio.current || procesando || compra || !usuario) return
+    if (accion === 'pagar' && (!metodo || !datosTarjetaCompletos || !vencimientoValido
+        || (!pendienteDetectado && (!direccion || !items.length)))) {
       setError('Revisa la dirección, productos y datos de la tarjeta antes de continuar.')
       return
     }
@@ -170,13 +166,11 @@ export const useCheckout = () => {
       const cuenta = await validarUsuario()
       if (cuenta.userId !== usuario.userId) throw new Error('La cuenta cambió. Inicia sesión de nuevo.')
 
-      // Conservar pedido y clave entre reintentos, para no crear pedidos duplicados
-      // cuando falla la llamada al microservicio de pagos.
-      const pendingKey = `huellitas_compra_pendiente_${cuenta.userId}`
-      const anterior = leerPedidoPendiente(pendingKey)
-      let operacion = anterior
+      const pendingKey = claveCompraPendiente(cuenta.userId)
+      let operacion = leerCompraPendiente(cuenta.userId)
+      const intentoExistente = Boolean(operacion)
       if (!operacion) {
-        if (soloConsultar || !items.length) throw new Error('No se encontró una compra pendiente.')
+        if (accion !== 'pagar' || !items.length) throw new Error('No se encontró una compra pendiente.')
         const direccionActual = cuenta.addresses?.find((d) => d.id === direccion?.id)
         if (!direccionActual) throw new Error('La dirección seleccionada ya no existe.')
         const revision = await revisarCarrito(items)
@@ -187,44 +181,85 @@ export const useCheckout = () => {
           actualizarPrecios(revision.actualizados)
           throw new Error('Los precios cambiaron. Revisa el nuevo total antes de continuar.')
         }
-        const pedidoNuevo = await crearPedido({
-          userId: cuenta.userId,
-          shippingAddress: {
-            street: direccionActual.street, city: direccionActual.city, houseNumber: direccionActual.houseNumber,
-            region: direccionActual.region, postalCode: direccionActual.postalCode
-          },
-          items: items.map(({ productoId, cantidad }) => ({ productId: productoId, quantity: cantidad }))
-        })
-        operacion = { orderId: pedidoNuevo.orderId, key: crypto.randomUUID() }
+        const key = crypto.randomUUID()
+        operacion = {
+          key,
+          datos: {
+            userId: cuenta.userId,
+            creationKey: key,
+            shippingAddress: {
+              street: direccionActual.street, city: direccionActual.city, houseNumber: direccionActual.houseNumber,
+              region: direccionActual.region, postalCode: direccionActual.postalCode
+            },
+            items: items.map(({ productoId, cantidad }) => ({ productId: productoId, quantity: cantidad }))
+          }
+        }
         localStorage.setItem(pendingKey, JSON.stringify(operacion))
         setPendiente(operacion)
       }
-      const pedidoId = operacion.orderId
-      if (anterior) {
-        const guardado = await obtenerPedido(pedidoId)
-        setPedidoPendiente(guardado)
-        if (guardado.status === 'CANCELADO') {
-          localStorage.removeItem(pendingKey)
-          setPendiente(null)
-          throw new Error('El pedido anterior está cancelado. Puedes iniciar una compra nueva.')
-        }
-        if (!soloConsultar && pedidoPendiente?.orderId !== pedidoId) {
-          throw new Error('Revisa primero el pedido guardado en el resumen antes de confirmar el pago.')
+
+      let pedido = operacion.orderId ? await obtenerPedido(operacion.orderId) : null
+      if (!pedido && intentoExistente) pedido = await obtenerPedidoPorIntento(operacion.key)
+      if (!pedido && operacion.datos && (!intentoExistente || accion === 'recuperar-pedido')) {
+        try {
+          pedido = await crearPedido(operacion.datos)
+        } catch (error) {
+          const confirmado = await obtenerPedidoPorIntento(operacion.key).catch(() => undefined)
+          if (!confirmado) {
+            if (confirmado === null && error instanceof RespuestaApiError && [400, 404].includes(error.status)) {
+              localStorage.removeItem(pendingKey)
+              setPendiente(null)
+              throw error
+            }
+            throw new Error('No se confirmó el pedido. Usa «Recuperar pedido» para revisar o repetir el mismo intento.')
+          }
+          pedido = confirmado
         }
       }
-      // Ante pérdida de conexión, consultar primero el pago anterior evita duplicarlo.
+      if (!pedido) throw new Error('El pedido aún no está confirmado. Puedes recuperar el mismo intento.')
+      if (pedido.orderId !== operacion.orderId) {
+        operacion = { ...operacion, orderId: pedido.orderId }
+        localStorage.setItem(pendingKey, JSON.stringify(operacion))
+        setPendiente(operacion)
+      }
+      setPedidoPendiente(pedido)
+      if (pedido.status === 'CANCELADO') {
+        localStorage.removeItem(pendingKey)
+        setPendiente(null)
+        setPagoFallido(null)
+        throw new Error('El pedido anterior está cancelado. Puedes iniciar una compra nueva.')
+      }
+
+      const pedidoId = pedido.orderId
       const pagosPrevios = await obtenerPagosPorPedido(pedidoId)
-      const exitoso = pagosPrevios.find((p) => p.status === 'SUCCESS')
-      const enProceso = pagosPrevios.some((p) => p.status === 'PROCESSING' || p.status === 'PENDING')
-      if (enProceso && !exitoso) throw new Error('El pago aún está en proceso. Revisa el historial o intenta recuperarlo después.')
-      const fallido = pagosPrevios.find((p) => p.status === 'FAILED')
-      let pago = exitoso
+      let pago = pagosPrevios.find((resultado) => resultado.status === 'SUCCESS')
+      const fallido = pagosPrevios.find((resultado) => resultado.status === 'FAILED') ?? null
+      setPagoFallido(pago ? null : fallido)
+      if (!pago && pagosPrevios.some((resultado) => resultado.status === 'PROCESSING' || resultado.status === 'PENDING')) {
+        throw new Error('El pago aún está en proceso. Consulta nuevamente antes de reintentar.')
+      }
+      if (!pago && (accion === 'consultar' || accion === 'recuperar-pedido')) {
+        if (fallido) throw new Error('El pago anterior falló. Revisa sus condiciones antes de reintentarlo.')
+        throw new Error('El pedido está registrado y todavía no tiene un pago confirmado.')
+      }
+      if (!pago && fallido && (accion !== 'reintentar-pago' || pagoFallido?.id !== fallido.id
+          || pagoFallido.method !== fallido.method || pagoFallido.installments !== fallido.installments
+          || pagoFallido.amount !== fallido.amount)) {
+        throw new Error('Revisa el método, las cuotas y el total guardados antes de reintentar.')
+      }
+      if (!pago && !fallido && (!metodo || accion === 'reintentar-pago')) {
+        throw new Error('Selecciona un método para el pedido guardado.')
+      }
+      if (!pago && intentoExistente && !fallido && pedidoPendiente?.orderId !== pedidoId) {
+        throw new Error('Revisa el pedido guardado en el resumen antes de confirmar el pago.')
+      }
       if (!pago) {
-        if (soloConsultar || !metodo) throw new Error('El pedido todavía no tiene un pago confirmado.')
         try {
           pago = fallido
             ? await reintentarPago(fallido.id)
-            : await procesarPago({ orderId: pedidoId, method: metodo, idempotencyKey: operacion.key, installments: metodo === 'CREDITO' ? cuotas : 1 })
+            : await procesarPago({
+              orderId: pedidoId, method: metodo!, idempotencyKey: operacion.key, installments: metodo === 'CREDITO' ? cuotas : 1
+            })
         } catch {
           pago = (await obtenerPagosPorPedido(pedidoId).catch(() => []))
             .find((resultado) => resultado.status === 'SUCCESS')
@@ -232,19 +267,20 @@ export const useCheckout = () => {
         }
       }
       if (pago.status !== 'SUCCESS') {
-        throw new Error(`No se completó el pago (estado: ${pago.status}). El pedido #${pedidoId} está registrado y puedes revisarlo en tu historial.`)
+        setPagoFallido(pago.status === 'FAILED' ? pago : null)
+        throw new Error(`No se completó el pago (estado: ${pago.status}). El pedido #${pedidoId} sigue registrado.`)
       }
-      // Usamos el pedido confirmado en backend para mostrar precios reales y estado.
-      const pedido = await obtenerPedido(pedidoId)
-      retirarCompra(pedido.items)
-      setCompra(crearComprobante(pedido, pago))
+      const confirmado = await obtenerPedido(pedidoId)
+      retirarCompra(confirmado.items)
+      setCompra(crearComprobante(confirmado, pago))
       setNumeroTarjeta(''); setCvv(''); setVencimiento(''); setTitular('')
       localStorage.removeItem(pendingKey)
       setPendiente(null)
+      setPagoFallido(null)
       setPaso('completado')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'No se pudo completar la compra.')
-      setPaso(soloConsultar ? 'direccion' : 'resumen')
+      setPaso(accion === 'pagar' ? 'resumen' : paso)
     } finally {
       setProcesando(false)
       bloqueoEnvio.current = false
@@ -262,6 +298,7 @@ export const useCheckout = () => {
     cvv, setCvv, cuotas, setCuotas,
     vencimientoValido, vencimientoVencido, numeroTarjetaValido,
     datosTarjetaCompletos, siguienteTarjeta,
-    total, subtotal, iva, totalEstimado, valorCuota, confirmarCuotas, procesarCompra, procesando, compra, pendienteDetectado, pedidoPendiente
+    total, subtotal, iva, totalEstimado, valorCuota, confirmarCuotas, procesarCompra, procesando, compra,
+    pendienteDetectado, pedidoPendiente, pagoFallido, pedidoSinConfirmar: Boolean(pendiente && !pendiente.orderId)
   }
 }
