@@ -1,13 +1,12 @@
-import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import { iniciarSesion, obtenerUsuario, type Usuario } from '../services/usuario.service'
+import { ACCESS_TOKEN_KEY, SESSION_EXPIRED_EVENT } from '../services/api.service'
 
 const STORAGE_KEY = 'huellitas_usuario'
-const ANTIGUO_TOKEN_KEY = 'huellitas_access_token'
 
 function leerSesion(): Usuario | null {
   try {
-    // Limpia cualquier token de sesión que hubiera quedado guardado por la versión anterior.
-    sessionStorage.removeItem(ANTIGUO_TOKEN_KEY)
+    if (!sessionStorage.getItem(ACCESS_TOKEN_KEY)) return null
     const raw = sessionStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const datos: unknown = JSON.parse(raw)
@@ -37,9 +36,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const salir = useCallback(() => {
     usuarioRef.current = null
     sessionStorage.removeItem(STORAGE_KEY)
-    sessionStorage.removeItem(ANTIGUO_TOKEN_KEY)
+    sessionStorage.removeItem(ACCESS_TOKEN_KEY)
     setUsuario(null)
   }, [])
+
+  useEffect(() => {
+    window.addEventListener(SESSION_EXPIRED_EVENT, salir)
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, salir)
+  }, [salir])
 
   const actualizarUsuario = useCallback((datos: Usuario) => {
     usuarioRef.current = datos
@@ -50,21 +54,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const ingresar = useCallback(async (email: string, password: string): Promise<Usuario> => {
     // El login devuelve los datos básicos de la cuenta para consultar el perfil.
     const respuesta = await iniciarSesion(email.trim(), password)
-    if (!Number.isInteger(respuesta.userId) || respuesta.userId <= 0) {
+    if (!Number.isInteger(respuesta.userId) || respuesta.userId <= 0 || !respuesta.accessToken) {
       throw new Error('El servidor no devolvió los datos de la cuenta.')
     }
 
     // Se consulta el perfil en el microservicio para confirmar el rol y que la cuenta siga activa.
-    const perfil = await obtenerUsuario(respuesta.userId)
-    if (!perfil.active || perfil.userId !== respuesta.userId || perfil.email !== respuesta.email || perfil.role !== respuesta.role) {
-      throw new Error('No se pudo verificar la cuenta en la base de datos.')
+    sessionStorage.setItem(ACCESS_TOKEN_KEY, respuesta.accessToken)
+    try {
+      const perfil = await obtenerUsuario(respuesta.userId)
+      if (!perfil.active || perfil.userId !== respuesta.userId || perfil.email !== respuesta.email || perfil.role !== respuesta.role) {
+        throw new Error('No se pudo verificar la cuenta en la base de datos.')
+      }
+      actualizarUsuario(perfil)
+      return perfil
+    } catch (error) {
+      salir()
+      throw error
     }
-
-    usuarioRef.current = perfil
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(perfil))
-    setUsuario(perfil)
-    return perfil
-  }, [])
+  }, [actualizarUsuario, salir])
 
   // Se vuelve a consultar MySQL a través del Gateway antes de permitir acciones protegidas.
   // La función es estable: lee el usuario desde un ref para no reiniciar efectos al refrescar el perfil.
@@ -73,6 +80,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!sesionActual) throw new Error('Debes iniciar sesión o registrarte para continuar.')
     try {
       const perfil = await obtenerUsuario(sesionActual.userId)
+      if (usuarioRef.current?.userId !== sesionActual.userId) {
+        throw new Error('Inicia sesión nuevamente para continuar.')
+      }
       if (!perfil.active || perfil.userId !== sesionActual.userId || perfil.email !== sesionActual.email) {
         salir()
         throw new Error('Tu usuario no está activo o ya no existe. Inicia sesión nuevamente.')

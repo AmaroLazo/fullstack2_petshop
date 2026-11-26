@@ -1,0 +1,16 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Compras > mantiene el snapshot del mensaje y el enlace cuando no hay pedidos 1`] = `
+[
+  <h2>
+    Aún no tienes pedidos
+  </h2>,
+  <a
+    class="hc-profile-primary"
+    data-discover="true"
+    href="/catalogo"
+  >
+    Explorar catálogo
+  </a>,
+]
+`;

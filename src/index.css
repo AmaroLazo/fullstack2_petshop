@@ -638,3 +638,117 @@ button, input, select, textarea { line-height: 1.4; }
 }
 .hc-catalog-card > .hc-catalog-product-info { flex: 1; }
 .hc-catalog-card .hc-catalog-product-footer { margin-top: auto; }
+.hc-admin-filtros { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 14px; margin: 12px 0 20px; }
+.hc-admin-filtros label { display: flex; flex-direction: column; gap: 7px; font-weight: 700; font-size: 14px; min-width: 190px; }
+.hc-admin-filtros .hc-admin-filtro-busqueda { flex: 1 1 270px; }
+.hc-admin-filtros input, .hc-admin-filtros select { width: 100%; min-height: 44px; padding: 9px 12px; background: white; border: 1px solid #D8C9DF; color: #3D2645; border-radius: 9px; font: inherit; font-size: 15px; }
+.hc-admin-filtros input:focus, .hc-admin-filtros select:focus { outline: 2px solid #6C2A8A; outline-offset: 2px; }
+.hc-admin-search-field { position: relative; display: flex; align-items: center; }
+.hc-admin-search-field svg { position: absolute; left: 12px; pointer-events: none; color: #6C2A8A; }
+.hc-admin-search-field input { padding-left: 40px; }
+.hc-admin-filtros > button { min-height: 44px; }
+@media (max-width: 560px) { .hc-admin-filtros label, .hc-admin-filtros > button { width: 100%; } }
+.hc-admin-shell {
+  font-family: 'Geist Variable', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: normal;
+}
+
+/* Las reglas globales de Terraria incluyen botones e inputs;
+   se sobreescriben solo dentro del administrador. */
+.hc-admin-shell button,
+.hc-admin-shell input,
+.hc-admin-shell select,
+.hc-admin-shell textarea,
+.hc-admin-shell option {
+  font-family: 'Geist Variable', Arial, sans-serif;
+  font-size: 15px;
+  letter-spacing: normal;
+}
+
+/* Encabezados, estadisticas y nombres conservan su jerarquia. */
+.hc-admin-shell h1,
+.hc-admin-shell h2,
+.hc-admin-shell h3,
+.hc-admin-shell h4,
+.hc-admin-shell strong {
+  font-family: 'Geist Variable', Arial, sans-serif;
+  letter-spacing: -0.015em;
+}
+
+/* Textos frecuentes de tablas, navegacion, filtros y formularios. */
+.hc-admin-shell table,
+.hc-admin-shell label,
+.hc-admin-shell .hc-admin-nav-link,
+.hc-admin-shell .hc-sidebar-caption,
+.hc-admin-shell .hc-report-filters {
+  font-family: 'Geist Variable', Arial, sans-serif;
+}
+/* ADMIN - PEDIDOS: tarjetas y productos en vertical */
+.hc-admin-order-list { display: grid; gap: 18px; padding: 18px; }
+.hc-admin-order-card { min-width: 0; padding: 20px; border: 1px solid #e9dfec; border-radius: 14px; background: #fff; }
+.hc-admin-order-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; flex-wrap: wrap; padding-bottom: 15px; border-bottom: 1px solid #eee5f0; }
+.hc-admin-order-header h3 { margin: 0 0 5px; font-size: 19px; font-weight: 750; color: #3d2645; }
+.hc-admin-order-header p { margin: 0 0 4px; color: #504258; }
+.hc-admin-order-header small { color: #736a79; }
+.hc-admin-order-products { display: grid; gap: 0; padding: 16px 0; }
+.hc-admin-order-products > strong { margin-bottom: 8px; color: #3d2645; }
+.hc-admin-order-product { display: flex; flex-direction: column; gap: 3px; min-width: 0; padding: 10px 0; border-bottom: 1px solid #f1ebf3; }
+.hc-admin-order-product-name { font-weight: 650; color: #3d2645; overflow-wrap: anywhere; }
+.hc-admin-order-product-details { font-size: 14px; color: #746a79; }
+.hc-admin-order-footer { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-top: 10px; }
+.hc-admin-order-total { display: grid; gap: 3px; }
+.hc-admin-order-total span { color: #746a79; font-size: 13px; }
+.hc-admin-order-total strong { font-size: 22px; color: #512460; }
+.hc-admin-order-edit { display: grid; gap: 7px; max-width: 100%; }
+.hc-admin-order-edit label { color: #3d2645; font-size: 13px; font-weight: 700; }
+.hc-admin-order-edit-actions { display: flex; align-items: stretch; gap: 10px; flex-wrap: wrap; }
+.hc-admin-order-edit .hc-order-status-select { min-width: 195px; max-width: 100%; margin: 0; }
+.hc-admin-order-edit .hc-admin-btn { display: inline-flex; align-items: center; gap: 7px; justify-content: center; }
+@media (max-width: 650px) {
+  .hc-admin-order-list { padding: 10px; }
+  .hc-admin-order-card { padding: 14px; }
+  .hc-admin-order-edit, .hc-admin-order-edit-actions { width: 100%; }
+  .hc-admin-order-edit .hc-order-status-select, .hc-admin-order-edit .hc-admin-btn { width: 100%; }
+}
+/* Estados visuales del administrador: colores semánticos y accesibles. */
+.hc-admin-shell .hc-admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.hc-admin-shell .hc-admin-badge-dot {
+  display: inline-block;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.hc-admin-shell .hc-admin-badge--success { color: #166534; background: #dcfce7; border-color: #86efac; }
+.hc-admin-shell .hc-admin-badge--danger { color: #991b1b; background: #fee2e2; border-color: #fca5a5; }
+.hc-admin-shell .hc-admin-badge--warning { color: #854d0e; background: #fef3c7; border-color: #fcd34d; }
+.hc-admin-shell .hc-admin-badge--info { color: #1d4ed8; background: #dbeafe; border-color: #93c5fd; }
+.hc-admin-shell .hc-admin-badge--neutral { color: #475569; background: #f1f5f9; border-color: #cbd5e1; }
+.hc-admin-shell .hc-orders-table tbody tr:has(.hc-admin-badge--danger) { background: #fff9f9; }
+.hc-admin-shell .hc-orders-table tbody tr:has(.hc-admin-badge--success) { border-left: 3px solid #bbf7d0; }
+.hc-admin-shell .hc-admin-order-card:has(.hc-admin-badge--success) { border-left: 3px solid #16a34a; }
+.hc-admin-shell .hc-admin-order-card:has(.hc-admin-badge--danger) { border-left: 3px solid #dc2626; }
+.hc-admin-shell .hc-admin-order-card:has(.hc-admin-badge--warning) { border-left: 3px solid #d97706; }
+.hc-admin-shell .hc-report-progress--pendiente .hc-report-progress-track > span { background: #d97706; }
+.hc-admin-shell .hc-report-progress--en_preparacion .hc-report-progress-track > span { background: #2563eb; }
+.hc-admin-shell .hc-report-progress--enviado .hc-report-progress-track > span { background: #0891b2; }
+.hc-admin-shell .hc-report-progress--entregado .hc-report-progress-track > span { background: #16a34a; }
+.hc-admin-shell .hc-report-progress--cancelado .hc-report-progress-track > span { background: #dc2626; }
+@media (max-width: 650px) {
+  .hc-admin-shell .hc-admin-badge { white-space: normal; }
+}

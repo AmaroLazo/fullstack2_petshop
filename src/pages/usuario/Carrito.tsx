@@ -28,6 +28,14 @@ export const Carrito = () => {
     </section>
   )
 
+  if (usuario.role === 'ADMIN') return (
+    <section className="mx-auto max-w-4xl space-y-5 px-4 py-10">
+      <h1 className="text-3xl font-extrabold text-[#3D2645]">Mi carrito</h1>
+      <p>El carrito está disponible para cuentas de cliente.</p>
+      <Link to="/admin" className="text-[#6C2A8A] underline">Volver al dashboard</Link>
+    </section>
+  )
+
   const total = items.reduce((suma, item) => suma + item.precio * item.cantidad, 0)
   const subtotal = Math.round(total / 1.19)
   const iva = total - subtotal

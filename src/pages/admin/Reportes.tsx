@@ -1,3 +1,4 @@
+import { EstadoPedidoBadge } from '../../components/admin/EstadoBadge'
 import { useMemo, useState } from 'react'
 import { RefreshCw, BarChart3, ShoppingBag, Wallet, Users, Package, AlertTriangle } from 'lucide-react'
 import { useDashboardAdmin } from '../../hooks/useDashboardAdmin'
@@ -125,8 +126,8 @@ export const Reportes = () => {
         </section>
         <section className="hc-dashboard-card">
           <div className="hc-card-heading"><div><h2>Estados de pedidos</h2><p>Pedidos registrados en {anio}</p></div></div>
-          {pedidos ? estadosPedidos.map(({ estado, label, cantidad }) => <div className="hc-report-progress" key={estado}>
-            <div className="hc-report-progress-label"><span>{label}</span><strong>{cantidad}</strong></div>
+          {pedidos ? estadosPedidos.map(({ estado, cantidad }) => <div className={`hc-report-progress hc-report-progress--${estado.toLowerCase()}`} key={estado}>
+            <div className="hc-report-progress-label"><EstadoPedidoBadge estado={estado} /><strong>{cantidad}</strong></div>
             <div className="hc-report-progress-track"><span style={{ width: `${cantidad / maxEstados * 100}%` }} /></div>
           </div>) : <p className="hc-admin-muted">Sin datos de pedidos.</p>}
         </section>

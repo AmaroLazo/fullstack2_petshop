@@ -1,3 +1,4 @@
+import { EstadoActivo, EstadoPedidoBadge, EstadoStock, EstadoBadge } from '../../components/admin/EstadoBadge'
 import { Link } from 'react-router'
 import { Users, ShoppingBag, Package, DollarSign, AlertTriangle, RefreshCw, ArrowUpRight, Tags } from 'lucide-react'
 import { useDashboardAdmin } from '../../hooks/useDashboardAdmin'
@@ -83,10 +84,10 @@ export const Dashboard = () => {
           <div className="hc-card-heading"><div><h2>Alertas reales</h2><p>Stock y pedidos pendientes</p></div><AlertTriangle size={20} /></div>
           {productos && stockBajo.map(p => (
             <div key={p.id} className="hc-alert-item danger"><span className="hc-alert-icon"><AlertTriangle size={17}/></span>
-              <div><strong>Stock bajo: {p.name}</strong><p>{p.stockQuantity ?? 0} unidades disponibles</p></div></div>
+              <div><strong>Stock bajo: {p.name}</strong><p><EstadoStock cantidad={Number(p.stockQuantity ?? 0)} minimo={Number(p.minStock ?? 0)} /></p></div></div>
           ))}
           {pedidos && pendientes > 0 && <div className="hc-alert-item warning"><span className="hc-alert-icon"><ShoppingBag size={17}/></span>
-            <div><strong>Pedidos pendientes</strong><p>{pendientes} pedido(s) por revisar</p></div></div>}
+            <div><strong>Pedidos pendientes</strong><p><EstadoBadge tono="warning">{pendientes} por revisar</EstadoBadge></p></div></div>}
           {productos && pedidos && stockBajo.length === 0 && pendientes === 0 &&
             <p className="hc-admin-muted">Sin alertas de stock ni pedidos pendientes.</p>}
           {(!productos || !pedidos) && <p className="hc-admin-muted">Algunas alertas no están disponibles.</p>}
@@ -101,7 +102,7 @@ export const Dashboard = () => {
         </tr></thead><tbody>
           {recientes.map(p => <tr key={p.orderId}><td><strong>#{p.orderId}</strong></td>
             <td>{usuarios?.find(u => u.userId === p.userId)?.name ?? `Usuario #${p.userId}`}</td><td>{fecha(p.createdAt)}</td><td>{moneda(Number(p.total))}</td>
-            <td><span className="hc-order-status pending">{p.status.replaceAll('_', ' ')}</span></td></tr>)}
+            <td><EstadoPedidoBadge estado={p.status} /></td></tr>)}
           {pedidos && recientes.length === 0 && <tr><td colSpan={5}>No hay pedidos registrados.</td></tr>}
           {!pedidos && <tr><td colSpan={5}>No se pudo consultar el listado de pedidos.</td></tr>}
         </tbody></table></div>
@@ -110,7 +111,7 @@ export const Dashboard = () => {
         <div className="hc-card-heading"><div><h2>Usuarios registrados</h2><p>Datos del microservicio de usuarios</p></div>
           <Link to="/admin/usuarios" className="hc-table-link">Ver todos <ArrowUpRight size={15}/></Link></div>
         <div className="hc-table-wrap"><table className="hc-orders-table"><thead><tr><th>ID</th><th>Nombre completo</th><th>Correo</th><th>Rol</th><th>Estado</th></tr></thead><tbody>
-          {(usuarios ?? []).slice(0, 8).map(u => <tr key={u.userId}><td>#{u.userId}</td><td><strong>{u.name}</strong></td><td>{u.email}</td><td>{u.role}</td><td>{u.active ? 'Activo' : 'Inactivo'}</td></tr>)}
+          {(usuarios ?? []).slice(0, 8).map(u => <tr key={u.userId}><td>#{u.userId}</td><td><strong>{u.name}</strong></td><td>{u.email}</td><td><EstadoBadge tono={u.role === 'ADMIN' ? 'info' : 'neutral'}>{u.role === 'ADMIN' ? 'Administrador' : 'Cliente'}</EstadoBadge></td><td><EstadoActivo activo={u.active} /></td></tr>)}
           {usuarios?.length === 0 && <tr><td colSpan={5}>No hay usuarios registrados.</td></tr>}
           {usuarios === null && <tr><td colSpan={5}>No se pudo consultar el listado de usuarios.</td></tr>}
         </tbody></table></div>
@@ -119,7 +120,7 @@ export const Dashboard = () => {
         <div className="hc-card-heading"><div><h2>Categorías registradas</h2><p>Datos del microservicio de catálogo</p></div>
           <Link to="/admin/categorias" className="hc-table-link">Ver todas <ArrowUpRight size={15}/></Link></div>
         <div className="hc-table-wrap"><table className="hc-orders-table"><thead><tr><th>ID</th><th>Categoría</th><th>Estado</th></tr></thead><tbody>
-          {(categorias ?? []).map(c => <tr key={c.id}><td>#{c.id}</td><td><strong>{c.name}</strong></td><td>{c.active === false ? 'Inactiva' : 'Activa'}</td></tr>)}
+          {(categorias ?? []).map(c => <tr key={c.id}><td>#{c.id}</td><td><strong>{c.name}</strong></td><td><EstadoActivo activo={c.active !== false} femenino /></td></tr>)}
           {categorias?.length === 0 && <tr><td colSpan={3}>No hay categorías registradas.</td></tr>}
           {categorias === null && <tr><td colSpan={3}>No se pudieron consultar categorías.</td></tr>}
         </tbody></table></div>

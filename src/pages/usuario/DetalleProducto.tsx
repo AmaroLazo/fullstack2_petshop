@@ -130,7 +130,7 @@ export const DetalleProducto = () => {
             <button
               type="button"
               onClick={agregarAlCarrito}
-              disabled={!disponible || agregando}
+              disabled={!disponible || agregando || usuario?.role === 'ADMIN'}
               aria-busy={agregando}
               className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#6C2A8A] px-5 py-3 font-bold text-white shadow-md transition-colors hover:bg-[#4B1B65] disabled:cursor-not-allowed disabled:bg-gray-300"
             >
@@ -142,7 +142,8 @@ export const DetalleProducto = () => {
               ) : (
                 <>
                   <ShoppingCart size={21} aria-hidden="true" />
-                  <span>{usuario ? 'Agregar al carrito' : 'Inicia sesión para agregar al carrito'}</span>
+                  <span>{usuario?.role === 'ADMIN' ? 'Compra disponible para clientes'
+                    : usuario ? 'Agregar al carrito' : 'Inicia sesión para agregar al carrito'}</span>
                 </>
               )}
             </button>

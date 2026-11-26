@@ -4,10 +4,10 @@ import { ChevronLeft, ChevronRight, PawPrint, Truck, Heart, ShieldCheck, Search,
 import { useProductos } from '../../hooks/useProductos'
 
 const imagenesCarrusel = [
-    'https://github.com/AmaroLazo/fullstack2_petshop/blob/amaro/img/gato1.png?raw=true',
-    'https://github.com/AmaroLazo/fullstack2_petshop/blob/amaro/img/gato2.png?raw=true',
-    'https://raw.githubusercontent.com/AmaroLazo/fullstack2_petshop/master/img/gato3.png',
-    'https://raw.githubusercontent.com/AmaroLazo/fullstack2_petshop/master/img/gato4.png',
+    'https://raw.githubusercontent.com/AmaroLazo/fullstack2_petshop/refs/heads/amaro/img/gato1.png',
+    'https://raw.githubusercontent.com/AmaroLazo/fullstack2_petshop/refs/heads/amaro/img/gato2.png',
+    'https://raw.githubusercontent.com/AmaroLazo/fullstack2_petshop/refs/heads/amaro/img/gato3.png',
+    'https://raw.githubusercontent.com/AmaroLazo/fullstack2_petshop/refs/heads/amaro/img/gato4.png',
 ]
 
 const formatoPrecio = (precio: number | string | null | undefined) => {

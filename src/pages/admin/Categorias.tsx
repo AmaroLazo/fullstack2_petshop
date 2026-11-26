@@ -1,6 +1,8 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { Plus, RefreshCw, Tags, X, Pencil, Save } from 'lucide-react'
+import { EstadoActivo } from '../../components/admin/EstadoBadge'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { Plus, RefreshCw, Tags, X, Pencil, Save, Search } from 'lucide-react'
 import { useCategoriasAdmin } from '../../hooks/useCategoriasAdmin'
+import { normalizarBusqueda } from '../../lib/normalizarBusqueda'
 import { useAuth } from '../../hooks/useAuth'
 import { listarTodosProductos } from '../../services/admin.service'
 import type { Producto } from '../../services/producto.service'
@@ -10,6 +12,14 @@ const formularioVacio = { name: '', description: '' }
 export const Categorias = () => {
   const { categorias, cargando, guardando, error, agregar, editar, recargar } = useCategoriasAdmin()
   const { usuario, validarUsuario } = useAuth()
+  const [busqueda, setBusqueda] = useState('')
+  const [estadoFiltro, setEstadoFiltro] = useState('todos')
+  const categoriasFiltradas = categorias.filter(categoria => {
+    const coincideTexto = normalizarBusqueda(`${categoria.id} ${categoria.name} ${categoria.description ?? ''}`)
+      .includes(normalizarBusqueda(busqueda))
+    const coincideEstado = estadoFiltro === 'todos' || (estadoFiltro === 'activos' ? categoria.active !== false : categoria.active === false)
+    return coincideTexto && coincideEstado
+  })
   const [productos, setProductos] = useState<Producto[] | null>(null)
   const [errorProductos, setErrorProductos] = useState('')
   const [intento, setIntento] = useState(0)
@@ -18,12 +28,18 @@ export const Categorias = () => {
   const [errorFormulario, setErrorFormulario] = useState('')
   const [exito, setExito] = useState('')
   const [editandoId, setEditandoId] = useState<number | null>(null)
+  const formularioEdicionRef = useRef<HTMLFormElement>(null)
+
+  useEffect(() => {
+    if (editandoId !== null) formularioEdicionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [editandoId])
   const [edicion, setEdicion] = useState({ name: '', description: '', active: true })
 
   const abrirEdicion = (id: number) => {
     const categoria = categorias.find(c => c.id === id)
     if (!categoria) return
     setEditandoId(id)
+    if (editandoId === id) formularioEdicionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     setEdicion({ name: categoria.name, description: categoria.description ?? '', active: categoria.active !== false })
     setMostrarFormulario(false)
     setErrorFormulario('')
@@ -124,7 +140,7 @@ export const Categorias = () => {
     {errorProductos && <div className="hc-admin-error" role="alert">No se pudo consultar el total de productos: {errorProductos}</div>}
     {exito && <div className="hc-admin-success" role="status">{exito}</div>}
 
-    {editandoId !== null && esAdministrador && <form onSubmit={guardarEdicion} className="hc-admin-product-form" id="form-editar-categoria">
+    {editandoId !== null && esAdministrador && <form onSubmit={guardarEdicion} className="hc-admin-product-form" id="form-editar-categoria" ref={formularioEdicionRef} style={{ scrollMarginTop: 24 }}>
       <h2><Pencil size={20}/> Editar categoría #{editandoId}</h2>
       <div className="hc-admin-form-grid">
         <label className="hc-admin-span">Nombre *<input required maxLength={100} value={edicion.name} onChange={e => setEdicion(f => ({ ...f, name: e.target.value }))}/></label>
@@ -158,19 +174,33 @@ export const Categorias = () => {
 
     <div className="hc-dashboard-card">
       <div className="hc-card-heading"><div>
-        <h2>{cargando ? 'Consultando...' : `${categorias.length} categoría(s)`}</h2>
+        <h2>{cargando ? 'Consultando...' : `${categoriasFiltradas.length} de ${categorias.length} categoría(s)`}</h2>
         <p>Registros consultados desde catalogo_db</p>
       </div></div>
+      <div className="hc-admin-filtros">
+        <label className="hc-admin-filtro-busqueda"><span>Buscar categoría</span>
+          <span className="hc-admin-search-field"><Search size={18} aria-hidden="true" />
+            <input type="search" value={busqueda} onChange={e => setBusqueda(e.target.value)} placeholder="Nombre, descripción o ID" aria-label="Buscar categorías" />
+          </span>
+        </label>
+        <label><span>Filtrar por estado</span>
+          <select value={estadoFiltro} onChange={e => setEstadoFiltro(e.target.value)} aria-label="Filtrar categorías por estado">
+            <option value="todos">Todas</option><option value="activos">Activas</option><option value="inactivos">Inactivas</option>
+          </select>
+        </label>
+        <button type="button" className="hc-admin-btn secondary" disabled={!busqueda && estadoFiltro === 'todos'} onClick={() => { setBusqueda(''); setEstadoFiltro('todos') }}>Limpiar filtros</button>
+      </div>
       <div className="hc-table-wrap"><table className="hc-orders-table"><thead><tr>
         <th>ID</th><th>Categoría</th><th>Descripción</th><th>Productos</th><th>Estado</th><th>Acciones</th>
       </tr></thead><tbody>
-        {categorias.map(categoria => <tr key={categoria.id}>
+        {categoriasFiltradas.map(categoria => <tr key={categoria.id}>
           <td>#{categoria.id}</td><td><strong>{categoria.name}</strong></td><td>{categoria.description || '—'}</td>
           <td>{productos === null ? '—' : productos.filter(producto => producto.categoryId === categoria.id).length}</td>
-          <td>{categoria.active === false ? 'Inactiva' : 'Activa'}</td>
+          <td><EstadoActivo activo={categoria.active !== false} femenino /></td>
           <td>{esAdministrador && <button type="button" className="hc-admin-btn secondary" disabled={guardando} onClick={() => abrirEdicion(categoria.id)}><Pencil size={16}/> Editar</button>}</td>
         </tr>)}
         {!cargando && categorias.length === 0 && <tr><td colSpan={6}>No hay categorías registradas.</td></tr>}
+        {!cargando && categorias.length > 0 && categoriasFiltradas.length === 0 && <tr><td colSpan={6}>No hay categorías que coincidan con los filtros.</td></tr>}
       </tbody></table></div>
     </div>
   </section>

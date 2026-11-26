@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '../../components/ui/input'
 import { Label } from '../../components/ui/label'
 import { useAuth } from '../../hooks/useAuth'
+import { validarCorreo } from '../../lib/validaciones-auth'
 
 export const Login = () => {
   const { ingresar } = useAuth()
@@ -16,13 +17,18 @@ export const Login = () => {
   const [password, setPassword] = useState('')
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
+  const [correoTocado, setCorreoTocado] = useState(false)
+  const errorCorreo = validarCorreo(email)
 
   const enviar = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setCargando(true)
+    setCorreoTocado(true)
     setError('')
+    if (errorCorreo) { setError(errorCorreo); return }
+    if (!password.trim()) { setError('Ingresa tu contraseña.'); return }
+    setCargando(true)
     try {
-      const perfil = await ingresar(email, password)
+      const perfil = await ingresar(email.trim().toLowerCase(), password)
       // Las cuentas ADMIN entran directamente al dashboard; CUSTOMER vuelve a la tienda.
       const destinoCliente = rutaDestino.startsWith('/admin') ? '/' : rutaDestino
       navigate(perfil.role === 'ADMIN' ? '/admin' : destinoCliente, { replace: true })
@@ -51,10 +57,14 @@ export const Login = () => {
                 placeholder="correo@ejemplo.com"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
+                onBlur={() => setCorreoTocado(true)}
+                aria-invalid={correoTocado && Boolean(errorCorreo)}
+                aria-describedby={correoTocado && errorCorreo ? 'login-error-correo' : undefined}
                 required
                 disabled={cargando}
                 className="h-12 text-base"
               />
+              {correoTocado && errorCorreo && <p id="login-error-correo" role="alert" className="text-sm text-red-700">{errorCorreo}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="login-password" className="text-base">Contraseña</Label>

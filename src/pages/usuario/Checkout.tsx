@@ -3,6 +3,8 @@ import { ArrowLeft, CreditCard, MapPin, Wallet, Plus, LoaderCircle, PackageCheck
 import { useAuth } from '../../hooks/useAuth'
 import { useCarrito } from '../../hooks/useCarrito'
 import { FACTORES_CUOTAS, useCheckout } from '../../hooks/useCheckout'
+import { CamposDireccion } from '../../components/CamposDireccion'
+import { formatearDireccion } from '../../lib/direccion'
 
 const clp = (valor: number) => Math.round(valor).toLocaleString('es-CL', {
   style: 'currency', currency: 'CLP', maximumFractionDigits: 0
@@ -17,8 +19,7 @@ export const Checkout = () => {
   const checkout = useCheckout()
   const {
     perfil, cargando, error, setError, recargar, direccionId, setDireccionId, direccion,
-    mostrarNuevaDireccion, setMostrarNuevaDireccion, calleNueva, setCalleNueva,
-    ciudadNueva, setCiudadNueva, guardandoDireccion, errorDireccion, guardarDireccion,
+    mostrarNuevaDireccion, setMostrarNuevaDireccion, datosDireccion, setDatosDireccion, guardandoDireccion, errorDireccion, guardarDireccion,
     paso, setPaso, metodo, seleccionarMetodo, siguienteDireccion,
     numeroTarjeta, setNumeroTarjeta, titular, setTitular, vencimiento, setVencimiento,
     cvv, setCvv, cuotas, setCuotas, vencimientoValido, vencimientoVencido, numeroTarjetaValido, datosTarjetaCompletos, siguienteTarjeta,
@@ -26,6 +27,7 @@ export const Checkout = () => {
   } = checkout
 
   if (!usuario) return <Navigate to="/login?redirect=%2Fcheckout" replace />
+  if (usuario.role === 'ADMIN') return <Navigate to="/carrito" replace />
   if (items.length === 0 && !compra && !pendienteDetectado) return <Navigate to="/carrito" replace />
 
   return (
@@ -57,7 +59,7 @@ export const Checkout = () => {
                   {perfil.addresses.map((d) => (
                     <label key={d.id} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-4 ${direccionId === d.id ? 'border-[#6C2A8A] bg-purple-50' : 'border-gray-200'}`}>
                       <input type="radio" name="direccion" checked={direccionId === d.id} onChange={() => setDireccionId(d.id)} className="accent-[#6C2A8A]"/>
-                      <span className="font-semibold">{d.street}, {d.city}</span>
+                      <span className="font-semibold">{formatearDireccion(d)}</span>
                     </label>
                   ))}
                 </div>
@@ -70,8 +72,7 @@ export const Checkout = () => {
               {mostrarNuevaDireccion && (
                 <form className="space-y-3 rounded-xl border border-purple-100 bg-purple-50/40 p-4" onSubmit={(e) => { e.preventDefault(); void guardarDireccion() }}>
                   <h3 className="font-extrabold text-[#3D2645]">Nueva dirección</h3>
-                  <div className="space-y-1"><label htmlFor="direccion-calle" className="text-sm font-bold">Calle y número</label><input id="direccion-calle" required maxLength={150} className={control} value={calleNueva} onChange={(e) => setCalleNueva(e.target.value)} placeholder="Ej.: Los Robles 123"/></div>
-                  <div className="space-y-1"><label htmlFor="direccion-ciudad" className="text-sm font-bold">Ciudad o comuna</label><input id="direccion-ciudad" required maxLength={100} className={control} value={ciudadNueva} onChange={(e) => setCiudadNueva(e.target.value)} placeholder="Ej.: Coronel"/></div>
+                  <CamposDireccion value={datosDireccion} onChange={setDatosDireccion} inputClassName={control} />
                   {errorDireccion && <p role="alert" className="text-sm text-red-700">{errorDireccion}</p>}
                   <button type="submit" className={btn} disabled={guardandoDireccion}>{guardandoDireccion ? 'Guardando dirección...' : 'Guardar dirección'}</button>
                 </form>
@@ -81,7 +82,7 @@ export const Checkout = () => {
           ) : paso === 'metodo' ? (
             <div className="space-y-5">
               <h2 className="text-xl font-extrabold text-[#3D2645]">Selecciona el método de pago</h2>
-              <p className="text-sm text-gray-600">Dirección: {direccion?.street}, {direccion?.city}</p>
+              <p className="text-sm text-gray-600">Dirección: {formatearDireccion(direccion)}</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <button type="button" onClick={() => seleccionarMetodo('DEBITO')} className="flex items-center gap-3 rounded-xl border-2 border-purple-200 p-5 text-left font-bold text-[#3D2645] hover:border-[#6C2A8A] hover:bg-purple-50"><Wallet size={30} className="text-[#6C2A8A]"/> Tarjeta de débito</button>
                 <button type="button" onClick={() => seleccionarMetodo('CREDITO')} className="flex items-center gap-3 rounded-xl border-2 border-purple-200 p-5 text-left font-bold text-[#3D2645] hover:border-[#6C2A8A] hover:bg-purple-50"><CreditCard size={30} className="text-[#6C2A8A]"/> Tarjeta de crédito</button>
@@ -122,7 +123,7 @@ export const Checkout = () => {
               <div className="rounded-xl border border-green-200 bg-green-50 p-4"><p className="font-bold">ID de compra: #{compra.pedido.orderId}</p><p className="text-sm">ID de pago: #{compra.pago.id}</p><p className="text-sm">Estado: {compra.pedido.status === 'EN_PREPARACION' ? 'En preparación' : compra.pedido.status}</p></div>
               <h3 className="font-extrabold text-[#3D2645]">Comprobante de compra</h3>
               <div className="space-y-2">{compra.pedido.items?.map((i) => <div key={i.id} className="flex justify-between gap-3 border-b pb-2 text-sm"><span>{i.quantity} × {i.productName}</span><strong>{clp(i.subtotal)}</strong></div>)}</div>
-              <p><strong>Dirección:</strong> {compra.direccion.street}, {compra.direccion.city}</p>
+              <p><strong>Dirección:</strong> {formatearDireccion(compra.direccion)}</p>
               <p><strong>Método:</strong> {compra.metodo === 'CREDITO' ? 'Crédito' : 'Débito'} · Tarjeta terminada en {compra.ultimos4}</p>
               {compra.metodo === 'CREDITO' && <p><strong>Cuotas elegidas:</strong> {compra.cuotas} {compra.cuotas === 1 ? 'mes' : 'meses'} · {clp(compra.totalEstimado / compra.cuotas)} por cuota</p>}
               <div className="rounded-xl bg-purple-50 p-4"><strong>Total del pedido: {clp(compra.pedido.total)} · Total pagado: {clp(compra.pago.amount)}</strong></div>
@@ -133,7 +134,7 @@ export const Checkout = () => {
               <h2 className="text-xl font-extrabold text-[#3D2645]">Resumen general de compra</h2>
               <h3 className="font-bold">Productos</h3>
               <div className="space-y-2">{items.map((i) => <div key={i.productoId} className="flex justify-between gap-3 border-b pb-2 text-sm"><span>{i.cantidad} × {i.nombre}</span><strong>{clp(i.precio * i.cantidad)}</strong></div>)}</div>
-              <p><strong>Dirección:</strong> {direccion?.street}, {direccion?.city}</p>
+              <p><strong>Dirección:</strong> {formatearDireccion(direccion)}</p>
               <p><strong>Método:</strong> {metodo === 'CREDITO' ? 'Crédito' : 'Débito'}</p>
               <p><strong>Tarjeta:</strong> •••• {numeroTarjeta.slice(-4)}</p>
               {metodo === 'CREDITO' && <p><strong>Cuotas:</strong> {cuotas} {cuotas === 1 ? 'mes' : 'meses'} · {clp(valorCuota)} por cuota</p>}
@@ -180,7 +181,7 @@ export const Checkout = () => {
             <div className="flex justify-between gap-3"><dt>IVA (19 %)</dt><dd>{clp(iva)}</dd></div>
             <div className="flex justify-between gap-3 border-t pt-3 text-lg font-extrabold text-[#3D2645]"><dt>Total</dt><dd>{clp(total)}</dd></div>
           </dl>
-          {direccion && <p className="mt-5 text-xs text-gray-500">Entrega: {direccion.street}, {direccion.city}</p>}
+          {direccion && <p className="mt-5 text-xs text-gray-500">Entrega: {formatearDireccion(direccion)}</p>}
           <p className="mt-4 text-xs text-gray-500">Los precios incluyen IVA.</p>
         </aside>}
       </div>

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuth } from './useAuth'
+import { direccionVacia, limpiarDireccion, validarDireccion, type DireccionGuardada } from '../lib/direccion'
 import { useCarrito } from './useCarrito'
 import { agregarDireccion, obtenerUsuario, type Usuario } from '../services/usuario.service'
 import { crearPedido, obtenerPedido, type PedidoCliente } from '../services/pedido.service'
@@ -28,11 +29,10 @@ export const useCheckout = () => {
   const [cvv, setCvv] = useState('')
   const [cuotas, setCuotas] = useState(1)
   const [mostrarNuevaDireccion, setMostrarNuevaDireccion] = useState(false)
-  const [calleNueva, setCalleNueva] = useState('')
-  const [ciudadNueva, setCiudadNueva] = useState('')
+  const [datosDireccion, setDatosDireccion] = useState(direccionVacia)
   const [guardandoDireccion, setGuardandoDireccion] = useState(false)
   const [errorDireccion, setErrorDireccion] = useState('')
-  const [compra, setCompra] = useState<{ pedido: PedidoCliente; pago: PagoRegistrado; ultimos4: string; metodo: MetodoPago; cuotas: number; totalProductos: number; totalEstimado: number; direccion: { street: string; city: string }; productos: {nombre: string; cantidad: number; precio: number}[] } | null>(null)
+  const [compra, setCompra] = useState<{ pedido: PedidoCliente; pago: PagoRegistrado; ultimos4: string; metodo: MetodoPago; cuotas: number; totalProductos: number; totalEstimado: number; direccion: DireccionGuardada; productos: {nombre: string; cantidad: number; precio: number}[] } | null>(null)
   const [procesando, setProcesando] = useState(false)
   const [pendienteDetectado, setPendienteDetectado] = useState(() =>
     Boolean(usuario && localStorage.getItem(`huellitas_compra_pendiente_${usuario.userId}`)))
@@ -70,26 +70,21 @@ export const useCheckout = () => {
   }
   const guardarDireccion = async () => {
     if (guardandoDireccion) return
-    const street = calleNueva.trim()
-    const city = ciudadNueva.trim()
-    setErrorDireccion('')
-    if (!street || !city) {
-      setErrorDireccion('Ingresa la calle y la ciudad o comuna.')
-      return
-    }
+    const datos = limpiarDireccion(datosDireccion)
+    const errorValidacion = validarDireccion(datos)
+    setErrorDireccion(errorValidacion)
+    if (errorValidacion) return
     setGuardandoDireccion(true)
     try {
       const cuenta = await validarUsuario()
-      await agregarDireccion(cuenta.userId, { street, city })
-      // Consultar nuevamente al backend garantiza que usamos el ID real de la dirección guardada.
-      const actualizado = await obtenerUsuario(cuenta.userId)
-      const nueva = [...(actualizado.addresses ?? [])].reverse().find(
-        (d) => d.street === street && d.city === city
-      )
+      const idsAnteriores = new Set(cuenta.addresses?.map((direccion) => direccion.id))
+      const actualizado = await agregarDireccion(cuenta.userId, datos)
+      const nueva = actualizado.addresses?.find((direccion) => !idsAnteriores.has(direccion.id)
+        && direccion.street === datos.street && direccion.houseNumber === datos.houseNumber
+        && direccion.city === datos.city && direccion.region === datos.region && direccion.postalCode === datos.postalCode)
       setPerfil(actualizado)
       setDireccionId(nueva?.id ?? actualizado.addresses?.[0]?.id ?? null)
-      setCalleNueva('')
-      setCiudadNueva('')
+      setDatosDireccion(direccionVacia)
       setMostrarNuevaDireccion(false)
       setError('')
     } catch (e: unknown) {
@@ -178,7 +173,10 @@ export const useCheckout = () => {
         }
         const pedidoNuevo = await crearPedido({
           userId: cuenta.userId,
-          shippingAddress: { street: direccionActual.street, city: direccionActual.city },
+          shippingAddress: {
+            street: direccionActual.street, city: direccionActual.city, houseNumber: direccionActual.houseNumber,
+            region: direccionActual.region, postalCode: direccionActual.postalCode
+          },
           items: items.map(({ productoId, cantidad }) => ({ productId: productoId, quantity: cantidad }))
         })
         pendiente = { orderId: pedidoNuevo.orderId, key: crypto.randomUUID() }
@@ -201,7 +199,7 @@ export const useCheckout = () => {
       const vista = {
         pedido, pago, ultimos4: numeroTarjeta.slice(-4), metodo: pago.method, cuotas: pago.installments ?? 1,
         totalProductos: pedido.total, totalEstimado: pago.amount,
-        direccion: { street: direccionActual.street, city: direccionActual.city },
+        direccion: pedido.shippingAddress ?? direccionActual,
         productos: items.map((i) => ({ nombre: i.nombre, cantidad: i.cantidad, precio: i.precio }))
       }
       await minimoVisual()
@@ -225,7 +223,7 @@ export const useCheckout = () => {
     perfil, cargando, error, setError, recargar: cargarDirecciones,
     direccionId, setDireccionId, direccion,
     mostrarNuevaDireccion, setMostrarNuevaDireccion,
-    calleNueva, setCalleNueva, ciudadNueva, setCiudadNueva,
+    datosDireccion, setDatosDireccion,
     guardandoDireccion, errorDireccion, guardarDireccion,
     paso, setPaso, metodo, seleccionarMetodo, siguienteDireccion,
     numeroTarjeta, setNumeroTarjeta, titular, setTitular, vencimiento, setVencimiento,

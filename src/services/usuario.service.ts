@@ -1,4 +1,5 @@
 import { apiRequest } from './api.service'
+import type { DatosDireccion, DireccionGuardada } from '../lib/direccion'
 
 // Coinciden con UserRequest, UserResponse y AuthResponse del microservicio Java.
 export interface Usuario {
@@ -9,16 +10,14 @@ export interface Usuario {
   active: boolean
   createdAt?: string
   phone?: string | null
-  addresses?: { id: number; street: string; city: string }[]
+  addresses?: (DireccionGuardada & { id: number })[]
 }
 
-export interface RegistroUsuario {
+export interface RegistroUsuario extends DatosDireccion {
   name: string
   email: string
   password: string
   phone: string
-  street: string
-  city: string
 }
 
 export interface RespuestaLogin {
@@ -26,7 +25,16 @@ export interface RespuestaLogin {
   email: string
   role: 'CUSTOMER' | 'ADMIN'
   message: string
+  accessToken: string
 }
+
+export interface RegionChile {
+  nombre: string
+  comunas: string[]
+}
+
+export const listarRegiones = (signal?: AbortSignal) =>
+  apiRequest<RegionChile[]>('/api/users/regiones', { signal })
 
 export const registrarUsuario = (datos: RegistroUsuario) =>
   apiRequest<Usuario>('/api/users', { method: 'POST', body: JSON.stringify(datos) })
@@ -47,7 +55,7 @@ export const actualizarPerfil = (id: number, datos: { name: string; email: strin
 export const cambiarContrasena = (id: number, currentPassword: string, newPassword: string) =>
   apiRequest<void>(`/api/users/${id}/password`, { method: 'PUT', body: JSON.stringify({ currentPassword, newPassword }) })
 
-export const agregarDireccion = (id: number, direccion: { street: string; city: string }) =>
+export const agregarDireccion = (id: number, direccion: DatosDireccion) =>
   apiRequest<Usuario>(`/api/users/${id}/addresses`, { method: 'POST', body: JSON.stringify(direccion) })
 
 export const eliminarDireccion = (id: number, addressId: number) =>
@@ -55,3 +63,13 @@ export const eliminarDireccion = (id: number, addressId: number) =>
 
 export const desactivarCuenta = (id: number) =>
   apiRequest<void>(`/api/users/${id}/deactivate`, { method: 'PATCH' })
+
+// Operaciones de edición usadas por el panel de administración.
+export const actualizarUsuarioAdmin = (id: number, datos: { name: string; email: string; phone: string }) =>
+  apiRequest<Usuario>(`/api/users/${id}`, { method: 'PUT', body: JSON.stringify(datos) })
+
+export const cambiarRolUsuario = (id: number, role: Usuario['role']) =>
+  apiRequest<void>(`/api/users/${id}/role?role=${encodeURIComponent(role)}`, { method: 'PATCH' })
+
+export const alternarEstadoUsuario = (id: number) =>
+  apiRequest<void>(`/api/users/${id}/toggle-status`, { method: 'PATCH' })

@@ -2,7 +2,9 @@
 // Axios se configura una sola vez y los demas servicios reutilizan apiRequest.
 import axios, { type AxiosRequestConfig, type Method } from 'axios'
 
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8080').replace(/\/+$/, '')
+const API_URL = (import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'http://localhost:8080')).replace(/\/+$/, '')
+export const ACCESS_TOKEN_KEY = 'huellitas_access_token'
+export const SESSION_EXPIRED_EVENT = 'huellitas:sesion-vencida'
 
 // Instancia compartida de Axios para todas las peticiones del frontend.
 export const apiClient = axios.create({
@@ -16,6 +18,10 @@ export const apiClient = axios.create({
 // Asi no es necesario cambiar todos los hooks ni las llamadas existentes.
 export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const headers = new Headers(options.headers)
+    const esAccesoPublico = options.method === 'POST'
+        && (endpoint === '/api/users/login' || endpoint === '/api/users')
+    const token = esAccesoPublico ? null : sessionStorage.getItem(ACCESS_TOKEN_KEY)
+    if (token) headers.set('Authorization', `Bearer ${token}`)
 
     // Cuando enviamos un body JSON, indicamos su tipo de contenido.
     if (!headers.has('Content-Type') && options.body) {
@@ -49,7 +55,12 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
         // Axios guarda el codigo y el cuerpo de error en response.
         if (axios.isAxiosError(error)) {
             if (!error.response) {
-                throw new Error(`No se pudo conectar con el API Gateway (${API_URL}). Revisa que esté iniciado.`)
+                throw new Error(`No se pudo conectar con el API Gateway (${API_URL || 'http://localhost:8080'}). Revisa que esté iniciado.`)
+            }
+
+            if (error.response.status === 401 && token && token === sessionStorage.getItem(ACCESS_TOKEN_KEY)) {
+                window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT))
+                throw new Error('Tu sesión venció o dejó de ser válida. Inicia sesión nuevamente.')
             }
 
             const cuerpo = error.response.data as Record<string, unknown> | string | null

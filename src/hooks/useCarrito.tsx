@@ -35,7 +35,7 @@ export const CarritoProvider = ({ children }: { children: ReactNode }) => {
   const [estado, setEstado] = useState<{ userId: number | null; items: ItemCarrito[] }>(
     () => ({ userId: usuario?.userId ?? null, items: leerCarrito(usuario?.userId) })
   )
-  const userId = usuario?.userId ?? null
+  const userId = usuario?.role === 'CUSTOMER' ? usuario.userId : null
   const items = userId === null ? [] :
     estado.userId === userId ? estado.items : leerCarrito(userId)
 
@@ -47,6 +47,7 @@ export const CarritoProvider = ({ children }: { children: ReactNode }) => {
 
   const agregar = async (producto: Producto, cantidad: number) => {
     const perfil = await validarUsuario()
+    if (perfil.role !== 'CUSTOMER') throw new Error('El carrito está disponible para cuentas de cliente.')
     if (perfil.userId !== userId) throw new Error('Debes iniciar sesión nuevamente.')
     const actual = await obtenerProductoPorId(producto.id)
     const stock = Math.max(0, Math.floor(Number(actual.stockQuantity ?? 0)))
@@ -73,6 +74,7 @@ export const CarritoProvider = ({ children }: { children: ReactNode }) => {
 
   const cambiarCantidad = async (productoId: number, nuevaCantidad: number) => {
     const perfil = await validarUsuario()
+    if (perfil.role !== 'CUSTOMER') throw new Error('El carrito está disponible para cuentas de cliente.')
     if (perfil.userId !== userId) throw new Error('Debes iniciar sesión nuevamente.')
     if (!Number.isInteger(nuevaCantidad) || nuevaCantidad < 1) {
       throw new Error('La cantidad mínima es una unidad. Usa Eliminar para quitar el producto.')

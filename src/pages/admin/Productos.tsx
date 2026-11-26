@@ -1,8 +1,11 @@
-import { useState, type FormEvent } from 'react'
-import { PackagePlus, Plus, RefreshCw, X, Pencil, Save } from 'lucide-react'
+import { EstadoActivo, EstadoStock } from '../../components/admin/EstadoBadge'
+import { ConfirmacionExito } from '../../components/ConfirmacionExito'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { PackagePlus, Plus, RefreshCw, X, Pencil, Save, Search } from 'lucide-react'
 import { useProductosAdmin } from '../../hooks/useProductosAdmin'
 import { useAuth } from '../../hooks/useAuth'
 import type { NuevoProducto, ActualizacionProducto } from '../../services/admin.service'
+import { normalizarBusqueda } from '../../lib/normalizarBusqueda'
 
 const moneda = (n: number | string) => Number(n).toLocaleString('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 })
 const vacio = { name: '', description: '', imageUrl: '', price: '', discountPercent: '0', stockQuantity: '0', minStock: '0', categoryId: '' }
@@ -14,13 +17,29 @@ export const Productos = () => {
   const [formulario, setFormulario] = useState(vacio)
   const [errorFormulario, setErrorFormulario] = useState('')
   const [exito, setExito] = useState('')
+  const [productoCreado, setProductoCreado] = useState('')
   const [editandoId, setEditandoId] = useState<number | null>(null)
+  const [busqueda, setBusqueda] = useState('')
+  const [categoriaFiltro, setCategoriaFiltro] = useState('todas')
+  const productosFiltrados = productos.filter(producto => {
+    const coincideTexto = normalizarBusqueda(`${producto.id} ${producto.name} ${producto.description ?? ''} ${producto.categoryName ?? ''}`)
+      .includes(normalizarBusqueda(busqueda))
+    const coincideCategoria = categoriaFiltro === 'todas' || String(producto.categoryId) === categoriaFiltro
+    return coincideTexto && coincideCategoria
+  })
+
+  const formularioEdicionRef = useRef<HTMLFormElement>(null)
+
+  useEffect(() => {
+    if (editandoId !== null) formularioEdicionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [editandoId])
   const [edicion, setEdicion] = useState({ ...vacio, active: true })
 
   const abrirEdicion = (id: number) => {
     const seleccionado = productos.find(p => p.id === id)
     if (!seleccionado) return
     setEditandoId(id)
+    if (editandoId === id) formularioEdicionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     setMostrar(false)
     setErrorFormulario('')
     setExito('')
@@ -96,7 +115,7 @@ export const Productos = () => {
     }
     try {
       const nuevo = await agregar(datos)
-      setExito(`Producto «${nuevo.name}» guardado en MySQL con ID ${nuevo.id}.`)
+      setProductoCreado(nuevo.name)
       setFormulario(vacio)
       setMostrar(false)
     } catch (e) {
@@ -105,6 +124,8 @@ export const Productos = () => {
   }
 
   return <section className="hc-admin-products">
+    {productoCreado && <ConfirmacionExito titulo="Producto creado exitosamente" detalle={productoCreado}
+      onClose={() => setProductoCreado('')} />}
     <div className="hc-dashboard-heading"><div><span className="hc-section-kicker">HUELLITAS CLUB / ADMINISTRACIÓN</span>
       <h1>Administrar productos</h1><p>Productos y categorías obtenidos del microservicio de catálogo.</p></div>
       <div className="hc-admin-actions"><button type="button" className="hc-admin-btn secondary" onClick={recargar} disabled={cargando}>
@@ -114,7 +135,7 @@ export const Productos = () => {
     </div>
     {error && <div className="hc-admin-error" role="alert">{error}</div>}
     {exito && <div className="hc-admin-success" role="status">{exito}</div>}
-    {editandoId !== null && <form onSubmit={guardarEdicion} className="hc-admin-product-form" id="form-editar-producto">
+    {editandoId !== null && <form onSubmit={guardarEdicion} className="hc-admin-product-form" id="form-editar-producto" ref={formularioEdicionRef} style={{ scrollMarginTop: 24 }}>
       <h2><Pencil size={20}/> Editar producto #{editandoId}</h2>
       <div className="hc-admin-form-grid">
         <label>Nombre *<input required maxLength={150} value={edicion.name} onChange={e => setEdicion(f => ({ ...f, name: e.target.value }))}/></label>
@@ -159,17 +180,32 @@ export const Productos = () => {
         <PackagePlus size={17}/> {guardando ? 'Guardando...' : 'Guardar producto en MySQL'}</button>
     </form>}
     <div className="hc-dashboard-card"><div className="hc-card-heading"><div><h2>Productos registrados</h2>
-      <p>{cargando ? 'Cargando productos...' : `${productos.length} producto(s) en el catálogo`}</p></div></div>
+      <p>{cargando ? 'Cargando productos...' : `${productosFiltrados.length} de ${productos.length} producto(s)`}</p></div></div>
+      <div className="hc-admin-filtros">
+        <label className="hc-admin-filtro-busqueda"><span>Buscar producto</span>
+          <span className="hc-admin-search-field"><Search size={18} aria-hidden="true" />
+            <input type="search" value={busqueda} onChange={e => setBusqueda(e.target.value)} placeholder="Nombre, descripción o ID" aria-label="Buscar productos" />
+          </span>
+        </label>
+        <label><span>Filtrar por categoría</span>
+          <select value={categoriaFiltro} onChange={e => setCategoriaFiltro(e.target.value)} aria-label="Filtrar productos por categoría">
+            <option value="todas">Todas las categorías</option>
+            {categorias.map(c => <option key={c.id} value={String(c.id)}>{c.name}{c.active === false ? ' (inactiva)' : ''}</option>)}
+          </select>
+        </label>
+        <button type="button" className="hc-admin-btn secondary" disabled={!busqueda && categoriaFiltro === 'todas'} onClick={() => { setBusqueda(''); setCategoriaFiltro('todas') }}>Limpiar filtros</button>
+      </div>
       <div className="hc-table-wrap"><table className="hc-orders-table"><thead><tr>
         <th>ID</th><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th>Estado</th><th>Acciones</th>
       </tr></thead><tbody>
-        {productos.map(p => <tr key={p.id}><td>#{p.id}</td><td><strong>{p.name}</strong></td>
-          <td>{p.categoryName || 'Sin categoría'}</td><td>{moneda(p.price)}</td><td>{p.stockQuantity ?? '—'}</td>
-          <td>{p.active === false ? 'Inactivo' : 'Activo'}</td>
+        {productosFiltrados.map(p => <tr key={p.id}><td>#{p.id}</td><td><strong>{p.name}</strong></td>
+          <td>{p.categoryName || 'Sin categoría'}</td><td>{moneda(p.price)}</td><td><EstadoStock cantidad={Number(p.stockQuantity ?? 0)} minimo={Number(p.minStock ?? 0)} /></td>
+          <td><EstadoActivo activo={p.active !== false} /></td>
           <td><button type="button" className="hc-admin-btn secondary" onClick={() => abrirEdicion(p.id)} disabled={guardando || usuario?.role !== 'ADMIN'}>
             <Pencil size={16}/> Editar
           </button></td></tr>)}
         {!cargando && !error && productos.length === 0 && <tr><td colSpan={7}>No hay productos. Usa «Añadir producto» para crear el primero.</td></tr>}
+        {!cargando && !error && productos.length > 0 && productosFiltrados.length === 0 && <tr><td colSpan={7}>No hay productos que coincidan con los filtros.</td></tr>}
       </tbody></table></div></div>
   </section>
 }

@@ -2,6 +2,8 @@ import { Link } from 'react-router'
 import { Mail, MapPin, Phone, UserRound, Pencil, CalendarDays } from 'lucide-react'
 import { useCuenta } from '../../hooks/useCuenta'
 
+import { formatearDireccion } from '../../lib/direccion'
+
 export const Perfil = () => {
   const { usuario, perfil, cargando, error, refrescar } = useCuenta()
   if (!usuario) return <section className="hc-profile-panel"><h1>Mi cuenta</h1><p>Para ver tu información, <Link className="underline" to="/login?redirect=%2Fperfil">inicia sesión</Link>.</p></section>
@@ -18,7 +20,7 @@ export const Perfil = () => {
         <div><span>Estado de la cuenta</span><strong>{perfil.active ? 'Activa' : 'Inactiva'}</strong></div>
       </div>
       <h2><MapPin size={18}/> Mis direcciones</h2>
-      {perfil.addresses?.length ? <div className="hc-profile-addresses">{perfil.addresses.map((direccion) => <div key={direccion.id}>{direccion.street}, {direccion.city}</div>)}</div> : <p>No tienes direcciones registradas.</p>}
+      {perfil.addresses?.length ? <div className="hc-profile-addresses">{perfil.addresses.map((direccion) => <div key={direccion.id}>{formatearDireccion(direccion)}</div>)}</div> : <p>No tienes direcciones registradas.</p>}
     </div>}
   </section>
 }

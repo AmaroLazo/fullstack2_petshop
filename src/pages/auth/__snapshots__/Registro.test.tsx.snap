@@ -1,0 +1,26 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Crear usuario > mantiene el snapshot del campo de teléfono con el prefijo fijo 1`] = `
+<span
+  class="flex items-center overflow-hidden rounded-md border"
+>
+  <span
+    class="shrink-0 bg-muted px-3 py-3"
+  >
+    +56 9
+  </span>
+  <input
+    aria-describedby="registro-ayuda-telefono"
+    aria-invalid="false"
+    class="h-11 min-w-0 flex-1 px-3"
+    inputmode="numeric"
+    maxlength="8"
+    minlength="8"
+    pattern="[0-9]{8}"
+    placeholder="12345678"
+    required=""
+    type="tel"
+    value=""
+  />
+</span>
+`;

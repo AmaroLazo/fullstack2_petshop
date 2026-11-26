@@ -6,6 +6,9 @@ import { agregarDireccion, cambiarContrasena, desactivarCuenta, eliminarDireccio
 
 const mensajeError = (error: unknown) => error instanceof Error ? error.message : 'No se pudo completar la operación.'
 
+import { CamposDireccion } from '../../components/CamposDireccion'
+import { direccionVacia, formatearDireccion, limpiarDireccion, validarDireccion } from '../../lib/direccion'
+
 export const AjustesCuenta = () => {
   const navigate = useNavigate()
   const { usuario, perfil, cargando, error, refrescar, guardarEnSesion, validarUsuario, salir } = useCuenta()
@@ -13,8 +16,7 @@ export const AjustesCuenta = () => {
   const [email, setEmail] = useState('')
   const [actual, setActual] = useState('')
   const [nueva, setNueva] = useState('')
-  const [calle, setCalle] = useState('')
-  const [ciudad, setCiudad] = useState('')
+  const [datosDireccion, setDatosDireccion] = useState(direccionVacia)
   const [procesando, setProcesando] = useState('')
   const [aviso, setAviso] = useState('')
   const [fallo, setFallo] = useState('')
@@ -48,8 +50,11 @@ export const AjustesCuenta = () => {
     event.preventDefault()
     void ejecutar('direccion', async () => {
       const cuenta = await validarUsuario()
-      const resultado = await agregarDireccion(cuenta.userId, { street: calle.trim(), city: ciudad.trim() })
-      guardarEnSesion(resultado); setCalle(''); setCiudad('')
+      const direccion = limpiarDireccion(datosDireccion)
+      const errorDireccion = validarDireccion(direccion)
+      if (errorDireccion) throw new Error(errorDireccion)
+      guardarEnSesion(await agregarDireccion(cuenta.userId, direccion))
+      setDatosDireccion(direccionVacia)
     }, 'Dirección agregada correctamente.')
   }
   const borrarDireccion = (id: number) => {
@@ -81,8 +86,8 @@ export const AjustesCuenta = () => {
           <label>Número de teléfono<input value={perfil.phone || ''} disabled aria-describedby="hc-phone-note"/></label><p id="hc-phone-note" className="hc-profile-muted">El backend actual permite registrar el teléfono, pero todavía no editarlo.</p>
           <button className="hc-profile-primary" type="submit" disabled={Boolean(procesando)}><Save size={16}/>{procesando === 'perfil' ? 'Guardando...' : 'Guardar cambios'}</button></form></section>
       <section className="hc-profile-card"><h2><MapPin size={20}/> Mis direcciones</h2>
-        {perfil.addresses?.length ? <div className="hc-profile-addresses">{perfil.addresses.map((direccion) => <div className="hc-profile-address-row" key={direccion.id}><span>{direccion.street}, {direccion.city}</span><button type="button" className="hc-profile-danger-link" onClick={() => borrarDireccion(direccion.id)} disabled={Boolean(procesando)} aria-label={`Eliminar dirección ${direccion.street}`}><Trash2 size={16}/> Eliminar</button></div>)}</div> : <p>No tienes direcciones registradas.</p>}
-        <h3>Agregar nueva dirección</h3><form onSubmit={guardarDireccion} className="hc-profile-form"><label>Calle y número<input required value={calle} onChange={(e) => setCalle(e.target.value)}/></label><label>Ciudad o comuna<input required value={ciudad} onChange={(e) => setCiudad(e.target.value)}/></label><button type="submit" className="hc-profile-primary" disabled={Boolean(procesando)}>{procesando === 'direccion' ? 'Guardando...' : 'Agregar dirección'}</button></form>
+        {perfil.addresses?.length ? <div className="hc-profile-addresses">{perfil.addresses.map((direccion) => <div className="hc-profile-address-row" key={direccion.id}><span>{formatearDireccion(direccion)}</span><button type="button" className="hc-profile-danger-link" onClick={() => borrarDireccion(direccion.id)} disabled={Boolean(procesando)} aria-label={`Eliminar dirección ${direccion.street}`}><Trash2 size={16}/> Eliminar</button></div>)}</div> : <p>No tienes direcciones registradas.</p>}
+        <h3>Agregar nueva dirección</h3><form onSubmit={guardarDireccion} className="hc-profile-form"><CamposDireccion value={datosDireccion} onChange={setDatosDireccion} /><button type="submit" className="hc-profile-primary" disabled={Boolean(procesando)}>{procesando === 'direccion' ? 'Guardando...' : 'Agregar dirección'}</button></form>
         <p className="hc-profile-muted">Para cambiar una dirección existente, elimínala y agrega la nueva. El backend no ofrece edición directa de direcciones.</p></section>
       <section className="hc-profile-card"><h2><KeyRound size={20}/> Cambiar contraseña</h2><form onSubmit={guardarContrasena} className="hc-profile-form"><label>Contraseña actual<input type="password" autoComplete="current-password" required value={actual} onChange={(e) => setActual(e.target.value)}/></label><label>Nueva contraseña<input type="password" autoComplete="new-password" required minLength={8} value={nueva} onChange={(e) => setNueva(e.target.value)}/></label><button type="submit" className="hc-profile-primary" disabled={Boolean(procesando)}>{procesando === 'contrasena' ? 'Guardando...' : 'Cambiar contraseña'}</button></form></section>
       <section className="hc-profile-card hc-profile-danger-zone"><h2><UserX size={20}/> Desactivar cuenta</h2><p>Tu cuenta quedará inactiva y se cerrará tu sesión. Esta acción no elimina tus pedidos.</p><button type="button" className="hc-profile-danger" disabled={Boolean(procesando)} onClick={desactivar}>Desactivar mi cuenta</button></section>
